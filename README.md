@@ -1,4 +1,4 @@
-# Azure Virtual Desktop — Migration & Management Toolkit
+# Azure Virtual Desktop - Migration & Management Toolkit
 
 > **Bob's Discount Furniture · IT Infrastructure Team**  
 > Citrix DaaS → Azure Virtual Desktop · Production-Ready Automation Suite
