@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Azure Virtual Desktop Manager — Universal Deployment & Management Console
@@ -39,7 +39,8 @@ Set-StrictMode -Off
 $ErrorActionPreference = "Continue"
 
 # -- Assemblies ---------------------------------------------------------------
-Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms, System.Drawing
+Add-Type -AssemblyName PresentationFramework
+Add-Type -AssemblyName Microsoft.VisualBasic, PresentationCore, WindowsBase, System.Windows.Forms, System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 # -- License SKU Map ----------------------------------------------------------
@@ -246,10 +247,100 @@ function Get-Brush { param([string]$Hex)
         </Border>
       </ControlTemplate></Setter.Value></Setter>
     </Style>
+    <!-- ComboBoxItem dark styling -->
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Background" Value="#0D1F36"/>
+      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBoxItem">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+              <ContentPresenter VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="#1E3A5F"/>
+                <Setter Property="Foreground" Value="White"/>
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="#0078D4"/>
+                <Setter Property="Foreground" Value="White"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <!-- ComboBox with dark dropdown popup -->
     <Style TargetType="ComboBox">
-      <Setter Property="Background" Value="#0D1F36"/><Setter Property="Foreground" Value="#E2E8F0"/>
-      <Setter Property="BorderBrush" Value="#1E3A5F"/><Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Padding" Value="8,5"/><Setter Property="FontSize" Value="12"/>
+      <Setter Property="Background" Value="#0D1F36"/>
+      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="BorderBrush" Value="#1E3A5F"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="8,5"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="MaxDropDownHeight" Value="300"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBox">
+            <Grid>
+              <ToggleButton x:Name="TogBtn" Focusable="False" ClickMode="Press"
+                IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                <ToggleButton.Template>
+                  <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="TgBd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                      <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="22"/></Grid.ColumnDefinitions>
+                        <Path Grid.Column="1" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#64748B"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,2,0,0"/>
+                      </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="TgBd" Property="BorderBrush" Value="#2D5A8E"/>
+                        <Setter TargetName="TgBd" Property="Background" Value="#162D4E"/>
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+              <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
+                Margin="8,0,26,0" VerticalAlignment="Center"
+                Content="{TemplateBinding SelectionBoxItem}"
+                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+              <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"
+                Background="Transparent" Foreground="#E2E8F0" BorderThickness="0"
+                Margin="8,0,26,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                Focusable="True" CaretBrush="#50ABF1"/>
+              <Popup x:Name="Popup" Placement="Bottom"
+                IsOpen="{TemplateBinding IsDropDownOpen}"
+                AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                <Grid SnapsToDevicePixels="True"
+                  MinWidth="{TemplateBinding ActualWidth}"
+                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                  <Border Background="#0D1F36" BorderBrush="#2D5A8E" BorderThickness="1"
+                          CornerRadius="0,0,6,6" Effect="{x:Null}">
+                    <ScrollViewer SnapsToDevicePixels="True" Background="#0D1F36">
+                      <StackPanel IsItemsHost="True"
+                        KeyboardNavigation.DirectionalNavigation="Contained"/>
+                    </ScrollViewer>
+                  </Border>
+                </Grid>
+              </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsGrouping" Value="True">
+                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
     <Style TargetType="DataGrid">
       <Setter Property="Background" Value="#0D1F36"/><Setter Property="Foreground" Value="#E2E8F0"/>
@@ -1607,8 +1698,13 @@ for ($i=1;$i -le 8;$i++) { $WS += X "WS$i" }
 $GridHP    = X "GridHP";    $BtnRefHP   = X "BtnRefHP";   $BtnNewHP   = X "BtnNewHP"
 $GridSess  = X "GridSess";  $SessFilter = X "SessFilter";  $BtnRefSess = X "BtnRefSess"
 $BtnHealAll = X "BtnHealAll"; $BtnDrainAll = X "BtnDrainAll"
-$GridAG    = X "GridAG";    $GridApps   = X "GridApps";   $BtnRefAG   = X "BtnRefAG"
+$GridAG    = X "GridAG";    $GridApps   = X "GridApps";   $BtnRefAG   = X "BtnRefAG";   $BtnNewAG = X "BtnNewAG"
 $GridFSL   = X "GridFSL";   $FSLTotal   = X "FSLTotal";   $FSLSize    = X "FSLSize"
+$FSLQuota  = X "FSLQuota";  $SliderFSLAlert = X "SliderFSLAlert"; $TxtFSLAlert = X "TxtFSLAlert"
+$BtnFSLLocks = X "BtnFSLLocks"; $BtnFSLTmp = X "BtnFSLTmp"; $BtnFSLDiag = X "BtnFSLDiag"; $BtnFSLRef = X "BtnFSLRef"
+$BtnRefScale = X "BtnRefScale"; $BtnNewScale = X "BtnNewScale"; $BtnAddAlert = X "BtnAddAlert"
+$BtnNewLAW = X "BtnNewLAW"; $BtnNewSA = X "BtnNewSA"; $BtnNewKV = X "BtnNewKV"
+$BtnNewRG = X "BtnNewRG"; $BtnNewWS = X "BtnNewWS"; $BtnPubApp = X "BtnPubApp"
 $FSLQuota  = X "FSLQuota";  $SliderFSLAlert = X "SliderFSLAlert"; $TxtFSLAlert = X "TxtFSLAlert"
 $GridScale = X "GridScale"; $GridLAW    = X "GridLAW";    $GridAlerts = X "GridAlerts"
 
@@ -1699,7 +1795,15 @@ function Invoke-LicenseScan {
     Set-Status "Scanning licenses via Microsoft Graph..." 20
     Write-Log "Starting license assessment..." "STEP"
     try {
-        $token = (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -EA Stop).Token
+        $tokenObj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -EA Stop
+        # Az 12+ returns SecureString; earlier versions return plain string
+        if ($tokenObj.Token -is [System.Security.SecureString]) {
+            $bstr  = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token)
+            $token = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+        } else {
+            $token = $tokenObj.Token
+        }
         $hdr   = @{ Authorization="Bearer $token"; "Content-Type"="application/json" }
         $skus  = (Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/subscribedSkus" -Headers $hdr -EA Stop).value
 
@@ -1990,38 +2094,58 @@ function Load-WizardDropdowns {
 }
 
 function Build-ReviewSummary {
+    # Pre-compute all values before building table (try{} inside if() is invalid PS5)
+    $hpType = "Pooled"
+    try { if ($script:RdoPersonal.IsChecked)  { $hpType = "Personal"  } } catch {}
+    try { if ($script:RdoRemoteApp.IsChecked) { $hpType = "RemoteApp" } } catch {}
+    $lb = "BreadthFirst"
+    try { if ($script:RdoDepth.IsChecked) { $lb = "DepthFirst" } } catch {}
+    $vmSzRaw = ""; try { $vmSzRaw = $script:WizVMSize.SelectedItem } catch {}
+    $vmSz   = if ($vmSzRaw) { ($vmSzRaw -split " ")[0] } else { "Standard_D4s_v5" }
+    $vmCnt  = 2;  try { $vmCnt  = [int]$script:SliderVMCnt.Value   } catch {}
+    $join   = "Entra ID Join"
+    try { if ($script:RdoHybrid.IsChecked) { $join = "Hybrid AD Join" } } catch {}
+    $fsl   = "Enabled";  try { if (-not $script:ChkFSL.IsChecked)     { $fsl   = "Disabled" } } catch {}
+    $scale = "Enabled";  try { if (-not $script:ChkScaling.IsChecked) { $scale = "Disabled" } } catch {}
+    $hpName = "--"; try { $hpName = $script:WizHPName.Text   } catch {}
+    $rgVal  = "--"; try { $rgVal  = $script:WizRG.SelectedItem } catch {}
+    $locVal = "--"; try { $locVal = $script:WizRegion.SelectedValue } catch {}
+    $vnetV  = "--"; try { $vnetV  = $script:WizVNet.SelectedItem   } catch {}
+    $subnetV = "--"; try { $subnetV = $script:WizSubnet.SelectedItem } catch {}
+    $maxSV  = "--"; try { $maxSV  = [int]$script:SliderMaxSess.Value } catch {}
+
     $rows = [System.Collections.Generic.List[PSObject]]::new()
-    $hpType = if (try{$script:RdoPersonal.IsChecked}catch{$false}) {"Personal"} elseif (try{$script:RdoRemoteApp.IsChecked}catch{$false}) {"RemoteApp"} else {"Pooled"}
-    $lb     = if (try{$script:RdoDepth.IsChecked}catch{$false}) {"DepthFirst"} else {"BreadthFirst"}
-    $vmSzRaw = try{$script:WizVMSize.SelectedItem}catch{""}
-    $vmSz   = if ($vmSzRaw) {($vmSzRaw -split " ")[0]} else {"Standard_D4s_v5"}
-    $vmCnt  = try{[int]$script:SliderVMCnt.Value}catch{2}
-    $join   = if (try{$script:RdoHybrid.IsChecked}catch{$false}) {"Hybrid AD Join"} else {"Entra ID Join"}
-    $fsl    = if (try{$script:ChkFSL.IsChecked}catch{$true}) {"Enabled"} else {"Disabled"}
-    $scale  = if (try{$script:ChkScaling.IsChecked}catch{$true}) {"Enabled"} else {"Disabled"}
     $settings = @(
-        @{Section="Host Pool"; Setting="Name";          Value=try{$script:WizHPName.Text}catch{"--"}}
-        @{Section="Host Pool"; Setting="Type";          Value=$hpType}
-        @{Section="Host Pool"; Setting="Load Balancing"; Value=$lb}
-        @{Section="Host Pool"; Setting="Max Sessions";  Value=try{[int]$script:SliderMaxSess.Value}catch{"--"}}
-        @{Section="Infrastructure"; Setting="Resource Group"; Value=try{$script:WizRG.SelectedItem}catch{"--"}}
-        @{Section="Infrastructure"; Setting="Location"; Value=try{$script:WizRegion.SelectedValue}catch{"--"}}
-        @{Section="Networking";    Setting="VNet";      Value=try{$script:WizVNet.SelectedItem}catch{"--"}}
-        @{Section="Networking";    Setting="Subnet";    Value=try{$script:WizSubnet.SelectedItem}catch{"--"}}
-        @{Section="Session Hosts"; Setting="VM Size";   Value=$vmSz}
-        @{Section="Session Hosts"; Setting="VM Count";  Value=$vmCnt}
-        @{Section="Identity";      Setting="Join Type"; Value=$join}
-        @{Section="Profiles";      Setting="FSLogix";   Value=$fsl}
-        @{Section="Scaling";       Setting="Auto-Scale"; Value=$scale}
+        @{Section="Host Pool";       Setting="Name";           Value=$hpName}
+        @{Section="Host Pool";       Setting="Type";           Value=$hpType}
+        @{Section="Host Pool";       Setting="Load Balancing"; Value=$lb}
+        @{Section="Host Pool";       Setting="Max Sessions";   Value=$maxSV}
+        @{Section="Infrastructure";  Setting="Resource Group"; Value=$rgVal}
+        @{Section="Infrastructure";  Setting="Location";       Value=$locVal}
+        @{Section="Networking";      Setting="VNet";           Value=$vnetV}
+        @{Section="Networking";      Setting="Subnet";         Value=$subnetV}
+        @{Section="Session Hosts";   Setting="VM Size";        Value=$vmSz}
+        @{Section="Session Hosts";   Setting="VM Count";       Value=$vmCnt}
+        @{Section="Identity";        Setting="Join Type";      Value=$join}
+        @{Section="Profiles";        Setting="FSLogix";        Value=$fsl}
+        @{Section="Scaling";         Setting="Auto-Scale";     Value=$scale}
     )
     foreach ($s in $settings) { $rows.Add([PSCustomObject]$s) }
     try { $script:GridReview.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()) } catch {}
 
-    # Cost estimate
     $priceMap = @{"Standard_D2s_v5"=55;"Standard_D4s_v5"=110;"Standard_D8s_v5"=220;"Standard_D16s_v5"=440;"Standard_D4ds_v5"=120;"Standard_D8ds_v5"=240;"Standard_E4s_v5"=185;"Standard_E8s_v5"=370;"Standard_B4ms"=60;"Standard_B8ms"=120}
-    $unitCost = $priceMap[$vmSz]; if (-not $unitCost) {$unitCost=100}
+    $unitCost = $priceMap[$vmSz]; if (-not $unitCost) { $unitCost = 100 }
     $totalEst = $vmCnt * $unitCost
     try { $script:TxtEstCost.Text = "~`$$totalEst/mo"; $script:TxtEstNote.Text = "($vmCnt x $vmSz, compute only)" } catch {}
+}
+
+function Load-WizardWorkspaces {
+    if (-not $Global:IsConnected) { return }
+    try { $ws = @(Get-AzWvdWorkspace -EA SilentlyContinue); $script:WizWS.ItemsSource = @($ws | ForEach-Object {$_.Name}) } catch {}
+}
+function Load-WizardLAWs {
+    if (-not $Global:IsConnected) { return }
+    try { $laws = @(Get-AzOperationalInsightsWorkspace -EA SilentlyContinue); $script:WizLAW.ItemsSource = @($laws | ForEach-Object {$_.Name}) } catch {}
 }
 
 # ============================================================================
@@ -2031,19 +2155,22 @@ function Start-AVDDeployment {
     if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
     if ($Global:Sync.IsDeploying)  { [System.Windows.MessageBox]::Show("Deployment already running.", "AVD Manager") | Out-Null; return }
 
-    $hpName = try{$script:WizHPName.Text}catch{""}
-    $rg     = try{$script:WizRGList.SelectedItem}catch{""}
-    if (-not $rg) { $rg = try{$script:WizRG.SelectedItem}catch{""} }
-    $loc    = try{$script:WizRegion.SelectedValue}catch{"eastus"}
-    $vmCnt  = try{[int]$script:SliderVMCnt.Value}catch{2}
-    $prefix = try{$script:WizVMPrefix.Text}catch{"avd-host"}
-    $vmSzRaw = try{$script:WizVMSize.SelectedItem}catch{""}
-    $vmSz   = if ($vmSzRaw) {($vmSzRaw -split " ")[0]} else {"Standard_D4s_v5"}
-    $maxS   = try{[int]$script:SliderMaxSess.Value}catch{8}
-    $hpType = if (try{$script:RdoPersonal.IsChecked}catch{$false}) {"Personal"} elseif (try{$script:RdoRemoteApp.IsChecked}catch{$false}) {"Pooled"} else {"Pooled"}
-    $lb     = if (try{$script:RdoDepth.IsChecked}catch{$false}) {"DepthFirst"} else {"BreadthFirst"}
-    $agType = if (try{$script:RdoRemoteApp.IsChecked}catch{$false}) {"RailApplications"} else {"Desktop"}
-    $startVM = try{$script:ChkStartVM.IsChecked}catch{$true}
+    $hpName  = ""; try { $hpName  = $script:WizHPName.Text } catch {}
+    $rg      = ""; try { $rg      = $script:WizRG.SelectedItem } catch {}
+    $loc     = "eastus"; try { $loc = $script:WizRegion.SelectedValue } catch {}
+    $vmCnt   = 2; try { $vmCnt   = [int]$script:SliderVMCnt.Value } catch {}
+    $prefix  = "avd-host"; try { $prefix = $script:WizVMPrefix.Text } catch {}
+    $vmSzRaw = ""; try { $vmSzRaw = $script:WizVMSize.SelectedItem } catch {}
+    $vmSz    = if ($vmSzRaw) { ($vmSzRaw -split " ")[0] } else { "Standard_D4s_v5" }
+    $maxS    = 8; try { $maxS  = [int]$script:SliderMaxSess.Value } catch {}
+    $startVM = $true; try { $startVM = [bool]$script:ChkStartVM.IsChecked } catch {}
+    $hpType  = "Pooled"
+    try { if ($script:RdoPersonal.IsChecked)  { $hpType = "Personal"  } } catch {}
+    try { if ($script:RdoRemoteApp.IsChecked) { $hpType = "Pooled"    } } catch {}
+    $lb = "BreadthFirst"
+    try { if ($script:RdoDepth.IsChecked) { $lb = "DepthFirst" } } catch {}
+    $agType = "Desktop"
+    try { if ($script:RdoRemoteApp.IsChecked) { $agType = "RailApplications" } } catch {}
 
     if (-not $hpName -or -not $rg) { [System.Windows.MessageBox]::Show("Host Pool Name and Resource Group are required.", "AVD Manager") | Out-Null; return }
 
@@ -2051,7 +2178,8 @@ function Start-AVDDeployment {
     try { $script:BtnDeploy.IsEnabled=$false; $script:BtnCancelDeploy.IsEnabled=$true } catch {}
     # Clear wiz log
     try { $script:WizLog.Document.Blocks.Clear() } catch {}
-    $Global:WizLogBox = try { $script:WizLog } catch { $null }
+    $Global:WizLogBox = $null
+    try { $Global:WizLogBox = $script:WizLog } catch {}
 
     Write-Log "=== Deploying AVD: $hpName ($hpType) ===" "STEP"
     Write-Log "Region: $loc | VMs: $vmCnt x $vmSz | MaxSessions: $maxS" "INFO"
@@ -2203,7 +2331,8 @@ $BtnConnect.Add_Click({
         Set-Connected $true; Set-Status "Connected: $($ctx.Subscription.Name)" 0
         Write-Log "Connected: $($ctx.Account.Id) | Sub: $($ctx.Subscription.Name)" "OK"
         Load-Dashboard
-        if (try{$script:SetAutoLic.IsChecked}catch{$true}) { Invoke-LicenseScan }
+        $autoLic = $true; try { $autoLic = [bool]$script:SetAutoLic.IsChecked } catch {}
+        if ($autoLic) { Invoke-LicenseScan }
     } catch {
         Set-Status "Connection failed" 0; Write-Log "Connection failed: $_" "ERROR"
         [System.Windows.MessageBox]::Show("Connection failed:`n$_`n`nCheck credentials and network.", "AVD Manager") | Out-Null
@@ -2412,6 +2541,190 @@ $BtnApplyRDP.Add_Click({
 })
 
 # Log
+
+# -- Missing button stubs (New RG, WS, KV, SA, LAW) -------------------------
+$BtnNewRG.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    $name = [Microsoft.VisualBasic.Interaction]::InputBox("Enter new Resource Group name:", "Create Resource Group", "rg-avd-")
+    if (-not $name) { return }
+    $loc = try { $script:WizRegion.SelectedValue } catch { "eastus" }
+    if (-not $loc) { $loc = "eastus" }
+    try {
+        New-AzResourceGroup -Name $name -Location $loc -EA Stop | Out-Null
+        Write-Log "Created resource group: $name" "OK"
+        # Refresh the RG dropdowns
+        $rgs = @(Get-AzResourceGroup -EA SilentlyContinue | Sort-Object ResourceGroupName)
+        $rgList = @($rgs | ForEach-Object { $_.ResourceGroupName })
+        try { $script:WizRG.ItemsSource     = $rgList; $script:WizRG.SelectedValue     = $name } catch {}
+        try { $script:WizVNetRG.ItemsSource = $rgList; $script:WizVNetRG.SelectedValue = $name } catch {}
+        [System.Windows.MessageBox]::Show("Resource group '$name' created in $loc.", "AVD Manager") | Out-Null
+    } catch {
+        Write-Log "Create RG error: $_" "ERROR"
+        [System.Windows.MessageBox]::Show("Failed to create resource group:`n$_", "AVD Manager") | Out-Null
+    }
+})
+
+$BtnNewWS.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    $name = [Microsoft.VisualBasic.Interaction]::InputBox("Enter new Workspace name:", "Create Workspace", "ws-avd-")
+    if (-not $name) { return }
+    $rg  = try { $script:WizRG.SelectedItem } catch { "" }
+    $loc = try { $script:WizRegion.SelectedValue } catch { "eastus" }
+    if (-not $rg) { [System.Windows.MessageBox]::Show("Select a Resource Group first.", "AVD Manager") | Out-Null; return }
+    try {
+        New-AzWvdWorkspace -Name $name -ResourceGroupName $rg -Location $loc -FriendlyName $name -EA Stop | Out-Null
+        Write-Log "Created workspace: $name" "OK"
+        Load-WizardWorkspaces
+        try { $script:WizWS.SelectedValue = $name } catch {}
+        [System.Windows.MessageBox]::Show("Workspace '$name' created.", "AVD Manager") | Out-Null
+    } catch {
+        Write-Log "Create Workspace error: $_" "ERROR"
+        [System.Windows.MessageBox]::Show("Failed to create workspace:`n$_", "AVD Manager") | Out-Null
+    }
+})
+
+$BtnNewKV.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    [System.Windows.MessageBox]::Show("To create a Key Vault, go to:`nAzure Portal > Key Vaults > Create`n`nKey Vault name must be globally unique (3-24 chars, alphanumeric and hyphens).", "Create Key Vault") | Out-Null
+    Start-Process "https://portal.azure.com/#create/Microsoft.KeyVault"
+})
+
+$BtnNewSA.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    [System.Windows.MessageBox]::Show("To create a Storage Account for FSLogix:`n`n1. Azure Portal > Storage Accounts > Create`n2. Choose Premium performance, FileStorage kind for Azure Files Premium`n3. After creation, create a file share named 'profiles'`n4. Enable 'Azure Active Directory' (Entra ID) authentication on the share", "Create Storage Account") | Out-Null
+    Start-Process "https://portal.azure.com/#create/Microsoft.StorageAccount-ARM"
+})
+
+$BtnNewLAW.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    $name = [Microsoft.VisualBasic.Interaction]::InputBox("Enter Log Analytics Workspace name:", "Create Log Analytics Workspace", "law-avd-")
+    if (-not $name) { return }
+    $rg  = try { $script:WizRG.SelectedItem } catch { "" }
+    $loc = try { $script:WizRegion.SelectedValue } catch { "eastus" }
+    if (-not $rg) { [System.Windows.MessageBox]::Show("Select a Resource Group first.", "AVD Manager") | Out-Null; return }
+    try {
+        New-AzOperationalInsightsWorkspace -Name $name -ResourceGroupName $rg -Location $loc -Sku PerGB2018 -EA Stop | Out-Null
+        Write-Log "Created Log Analytics Workspace: $name" "OK"
+        Load-WizardLAWs
+        try { $script:WizLAW.SelectedValue = $name } catch {}
+        [System.Windows.MessageBox]::Show("Log Analytics Workspace '$name' created.", "AVD Manager") | Out-Null
+    } catch {
+        Write-Log "Create LAW error: $_" "ERROR"
+        [System.Windows.MessageBox]::Show("Failed to create workspace:`n$_", "AVD Manager") | Out-Null
+    }
+})
+
+# -- App group publish --------------------------------------------------------
+$BtnPubApp.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    $ag = $script:GridAG.SelectedItem
+    if (-not $ag) { [System.Windows.MessageBox]::Show("Select a RemoteApp application group first.", "AVD Manager") | Out-Null; return }
+    if ($ag.Type -ne "RemoteApp") { [System.Windows.MessageBox]::Show("Select a RemoteApp-type app group to publish applications.", "AVD Manager") | Out-Null; return }
+    $appName = [Microsoft.VisualBasic.Interaction]::InputBox("Application display name:", "Publish Application", "My App")
+    if (-not $appName) { return }
+    $appPath = [Microsoft.VisualBasic.Interaction]::InputBox("Executable path (e.g. C:\Windows\System32
+otepad.exe):", "Publish Application", "C:\Windows\System32
+otepad.exe")
+    if (-not $appPath) { return }
+    try {
+        $hp = Get-AzWvdApplicationGroup -Name $ag.Name -EA SilentlyContinue | Select-Object -First 1
+        $rg = ($hp.Id -split "/")[4]
+        New-AzWvdApplication -Name ($appName -replace "\s","_") -ApplicationGroupName $ag.Name `
+            -ResourceGroupName $rg -FilePath $appPath -IconPath $appPath -IconIndex 0 `
+            -CommandLineSetting DoNotAllow -ApplicationType InBuilt -EA Stop | Out-Null
+        Write-Log "Published application '$appName' to $($ag.Name)" "OK"
+        Load-AppGroups
+    } catch {
+        Write-Log "Publish app error: $_" "ERROR"
+        [System.Windows.MessageBox]::Show("Failed to publish application:`n$_", "AVD Manager") | Out-Null
+    }
+})
+
+# -- FSLogix actions ---------------------------------------------------------
+$BtnFSLRef.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    Write-Log "FSLogix refresh: scan Azure Files shares for profile containers..." "STEP"
+    try {
+        $sas = @(Get-AzStorageAccount -EA SilentlyContinue)
+        $rows = [System.Collections.Generic.List[PSObject]]::new()
+        foreach ($sa in $sas) {
+            $rg  = ($sa.Id -split "/")[4]
+            $ctx = $sa.Context
+            $shares = @(Get-AzStorageShare -Context $ctx -EA SilentlyContinue | Where-Object { $_.Name -match "profile" })
+            foreach ($sh in $shares) {
+                $rows.Add([PSCustomObject]@{
+                    Username="(scan in session)"; Share=$sh.Name; SizeMB=$sh.ShareUsageBytes/1MB
+                    Health="OK"; HBg="#0A2010"; HFg="#10B981"; LastMount="--"
+                })
+            }
+        }
+        if ($rows.Count -eq 0) { Write-Log "No profile shares found. Check storage account permissions." "WARN" }
+        else {
+            try { $script:GridFSL.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()) } catch {}
+            try { $script:FSLTotal.Text = "$($rows.Count)" } catch {}
+            Write-Log "FSLogix: found $($rows.Count) profile share(s)" "OK"
+        }
+    } catch { Write-Log "FSLogix refresh error: $_" "WARN" }
+})
+
+$BtnFSLLocks.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    $msg = "To clear FSLogix .lock files:`n`n1. Ensure the affected user is logged off`n2. Navigate to the profile storage share`n3. Delete any *.lock files in the user's VHDX folder`n`nThis tool cannot directly delete files on the share - use the Azure Storage Explorer or connect to the share via File Explorer."
+    [System.Windows.MessageBox]::Show($msg, "Clear FSLogix Lock Files") | Out-Null
+})
+
+$BtnFSLTmp.Add_Click({
+    [System.Windows.MessageBox]::Show("To remove temporary FSLogix VHDX files:`n`n1. Ensure no users are logged in`n2. Open Azure Storage Explorer`n3. Navigate to your profiles share`n4. Delete any *.vhdx.tmp or *.vhd.tmp files`n`nThese are created when a session terminates uncleanly.", "Remove Temp VHDXs") | Out-Null
+})
+
+$BtnFSLDiag.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    Write-Log "Running FSLogix diagnostics..." "STEP"
+    $results = [System.Collections.Generic.List[string]]::new()
+    try {
+        # Check storage accounts with file shares named 'profiles'
+        $sas = @(Get-AzStorageAccount -EA SilentlyContinue)
+        $results.Add("Storage accounts checked: $($sas.Count)")
+        foreach ($sa in $sas) {
+            $ctx = $sa.Context
+            $shares = @(Get-AzStorageShare -Context $ctx -EA SilentlyContinue | Where-Object {$_.Name -match "profile"})
+            if ($shares.Count -gt 0) { $results.Add("[OK] Found profile share in: $($sa.StorageAccountName)") }
+        }
+        # Check if FSLogix registry keys exist on a session host (requires PS remoting)
+        $results.Add("")
+        $results.Add("On each session host, verify:")
+        $results.Add("  HKLM:\SOFTWARE\FSLogix\Profiles\Enabled = 1")
+        $results.Add("  HKLM:\SOFTWARE\FSLogix\Profiles\VHDLocations = \\server\share")
+        $results.Add("")
+        $results.Add("FSLogix version check: Run 'frx version' on session hosts")
+        $results.Add("Minimum recommended: 2.9.8440.42104")
+    } catch { $results.Add("Error: $_") }
+    [System.Windows.MessageBox]::Show($results -join "`n", "FSLogix Diagnostics") | Out-Null
+    Write-Log "FSLogix diagnostic check complete" "OK"
+})
+
+# -- Scaling -----------------------------------------------------------------
+$BtnRefScale.Add_Click({ if ($Global:IsConnected) { Load-ScalingPlans } })
+
+$BtnNewScale.Add_Click({
+    if (-not $Global:IsConnected) { [System.Windows.MessageBox]::Show("Connect to Azure first.", "AVD Manager") | Out-Null; return }
+    $hp = $script:GridHP.SelectedItem
+    if (-not $hp) {
+        # Try getting from host pool grid
+        $hps = @(Get-AzWvdHostPool -EA SilentlyContinue)
+        if ($hps.Count -eq 0) { [System.Windows.MessageBox]::Show("No host pools found. Deploy a host pool first.", "AVD Manager") | Out-Null; return }
+    }
+    [System.Windows.MessageBox]::Show("To create a Scaling Plan:`n`nAzure Portal > Azure Virtual Desktop > Scaling Plans > Create`n`nOr deploy via wizard (Step 7: RDP and Scaling tab).", "New Scaling Plan") | Out-Null
+    Start-Process "https://portal.azure.com/#blade/Microsoft_Azure_WVD/WvdManagerMenuBlade/scalingPlans"
+})
+
+# -- Monitoring ---------------------------------------------------------------
+$BtnAddAlert.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    [System.Windows.MessageBox]::Show("Common AVD alerts to configure:`n`n[!] Session host unavailable > 0`n[!] User connection failures > 5/min`n[!] CPU utilization > 85% sustained`n[!] Available session hosts = 0`n[!] FSLogix mount failures > 0`n`nCreate via: Azure Monitor > Alerts > Create alert rule`nOr use Azure Portal > Monitor > Alerts.", "Add Alert Rule") | Out-Null
+    Start-Process "https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade/alertsV2"
+})
+
 $BtnClearLog.Add_Click({ try{$script:MainLogBox.Document.Blocks.Clear()}catch{} })
 
 # Settings
