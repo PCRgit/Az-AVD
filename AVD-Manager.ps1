@@ -172,86 +172,359 @@ function Get-Brush { param([string]$Hex)
     Title="Azure Virtual Desktop Manager v1.0"
     Height="900" Width="1440" MinHeight="700" MinWidth="1080"
     WindowStartupLocation="CenterScreen"
-    Background="#0A1628" Foreground="#E2E8F0" FontFamily="Segoe UI">
+    Background="#080F1E" Foreground="#F1F5F9" FontFamily="Segoe UI"
+    UseLayoutRounding="True"
+    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextRenderingMode="ClearType"
+    RenderOptions.BitmapScalingMode="HighQuality">
   <Window.Resources>
-    <Style TargetType="TextBlock"><Setter Property="Foreground" Value="#E2E8F0"/><Setter Property="FontFamily" Value="Segoe UI"/></Style>
-    <Style TargetType="Separator"><Setter Property="Background" Value="#1E3A5F"/><Setter Property="Height" Value="1"/><Setter Property="Margin" Value="0,6"/></Style>
+
+    <!-- ── Base text ─────────────────────────────────────────────────────── -->
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="#F1F5F9"/>
+      <Setter Property="FontFamily" Value="Segoe UI"/>
+      <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+    </Style>
+
+    <!-- ── ToolTip ───────────────────────────────────────────────────────── -->
+    <Style TargetType="ToolTip">
+      <Setter Property="Background" Value="#0C1829"/>
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="BorderBrush" Value="#1B324E"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="10,6"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="HasDropShadow" Value="True"/>
+    </Style>
+
+    <!-- ── Separator ─────────────────────────────────────────────────────── -->
+    <Style TargetType="Separator">
+      <Setter Property="Background" Value="#1B324E"/>
+      <Setter Property="Height" Value="1"/>
+      <Setter Property="Margin" Value="0,8"/>
+    </Style>
+
+    <!-- ── Label ─────────────────────────────────────────────────────────── -->
+    <Style TargetType="Label">
+      <Setter Property="Foreground" Value="#7A9DC4"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Padding" Value="0,6,0,2"/>
+    </Style>
+
+    <!-- ── Scrollbar — thin and subtle ──────────────────────────────────── -->
+    <Style TargetType="ScrollBar">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Width" Value="5"/>
+      <Setter Property="MinWidth" Value="5"/>
+      <Setter Property="Opacity" Value="0.55"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+            <Grid>
+              <Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                  <Thumb>
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Border Background="#3B82F6" CornerRadius="3" Margin="1"/>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ── Nav button (inactive) ─────────────────────────────────────────── -->
     <Style x:Key="NavBtn" TargetType="Button">
-      <Setter Property="Background" Value="Transparent"/><Setter Property="Foreground" Value="#94A3B8"/>
-      <Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="14,10"/>
-      <Setter Property="HorizontalContentAlignment" Value="Left"/><Setter Property="Cursor" Value="Hand"/><Setter Property="FontSize" Value="12"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="7" Margin="6,2" Padding="{TemplateBinding Padding}">
-          <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#1E3A5F"/><Setter Property="Foreground" Value="#E2E8F0"/></Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#64839E"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="14,10"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FontSize" Value="12.5"/>
+      <Setter Property="FontFamily" Value="Segoe UI"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="7" Margin="6,2" Padding="{TemplateBinding Padding}">
+              <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/></Border.RenderTransform>
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                      To="#0F2238" Duration="0:0:0.12" FillBehavior="HoldEnd"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                      To="#00000000" Duration="0:0:0.18" FillBehavior="HoldEnd"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="#C0D8F0"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
-    <Style x:Key="NavActive" TargetType="Button" BasedOn="{StaticResource NavBtn}">
-      <Setter Property="Background" Value="#0D2547"/><Setter Property="Foreground" Value="#50ABF1"/>
+
+    <!-- ── Nav button (active) with left accent bar ──────────────────────── -->
+    <Style x:Key="NavActive" TargetType="Button">
+      <Setter Property="Foreground" Value="#60B4FF"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="14,10"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="FontSize" Value="12.5"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontFamily" Value="Segoe UI"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Grid Margin="6,2">
+              <Rectangle Width="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,4,0,4" RadiusX="2" RadiusY="2">
+                <Rectangle.Fill>
+                  <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#60B4FF" Offset="0"/>
+                    <GradientStop Color="#3B82F6" Offset="1"/>
+                  </LinearGradientBrush>
+                </Rectangle.Fill>
+              </Rectangle>
+              <Border x:Name="Bd" Background="#0E2040" Margin="3,0,0,0" CornerRadius="0,7,7,0" Padding="{TemplateBinding Padding}">
+                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+              </Border>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
+
+    <!-- ── Primary button ────────────────────────────────────────────────── -->
     <Style x:Key="BtnPrimary" TargetType="Button">
-      <Setter Property="Background" Value="#0078D4"/><Setter Property="Foreground" Value="White"/>
-      <Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="16,8"/>
-      <Setter Property="FontSize" Value="12"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#106EBE"/></Trigger>
-          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Background" Value="#1E3A5F"/><Setter Property="Foreground" Value="#475569"/></Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                  <GradientStop Color="#3B82F6" Offset="0"/>
+                  <GradientStop Color="#2563EB" Offset="1"/>
+                </LinearGradientBrush>
+              </Border.Background>
+              <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/></Border.RenderTransform>
+              <Border.RenderTransformOrigin>0.5,0.5</Border.RenderTransformOrigin>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                      To="1.02" Duration="0:0:0.10"/>
+                    <DoubleAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                      To="1.02" Duration="0:0:0.10"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                      To="1.0" Duration="0:0:0.12"/>
+                    <DoubleAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                      To="1.0" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="RenderTransform">
+                  <Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96"/></Setter.Value>
+                </Setter>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.38"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
+
+    <!-- ── Secondary button ──────────────────────────────────────────────── -->
     <Style x:Key="BtnSec" TargetType="Button" BasedOn="{StaticResource BtnPrimary}">
-      <Setter Property="Background" Value="#1E3A5F"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" BorderBrush="#2D5A8E" BorderThickness="1">
-          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Border>
-        <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#243E64"/></Trigger></ControlTemplate.Triggers>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Foreground" Value="#A0BCD8"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="#0F2038" CornerRadius="7"
+                    BorderBrush="#1B324E" BorderThickness="1"
+                    Padding="{TemplateBinding Padding}">
+              <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
+              <Border.RenderTransformOrigin>0.5,0.5</Border.RenderTransformOrigin>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                      To="#162D4E" Duration="0:0:0.12"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="Bd"
+                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                      To="#0F2038" Duration="0:0:0.15"/>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="RenderTransform">
+                  <Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96"/></Setter.Value>
+                </Setter>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.35"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
+
+    <!-- ── Green / Red action buttons ───────────────────────────────────── -->
     <Style x:Key="BtnGreen" TargetType="Button" BasedOn="{StaticResource BtnPrimary}">
-      <Setter Property="Background" Value="#065F46"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Border>
-        <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#047857"/></Trigger></ControlTemplate.Triggers>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#16A34A" Offset="0"/><GradientStop Color="#15803D" Offset="1"/>
+              </LinearGradientBrush></Border.Background>
+              <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
+              <Border.RenderTransformOrigin>0.5,0.5</Border.RenderTransformOrigin>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Opacity" Value="0.85"/></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="RenderTransform"><Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96"/></Setter.Value></Setter></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Opacity" Value="0.35"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
     <Style x:Key="BtnRed" TargetType="Button" BasedOn="{StaticResource BtnPrimary}">
-      <Setter Property="Background" Value="#7F1D1D"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Border>
-        <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#991B1B"/></Trigger></ControlTemplate.Triggers>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#DC2626" Offset="0"/><GradientStop Color="#B91C1C" Offset="1"/>
+              </LinearGradientBrush></Border.Background>
+              <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
+              <Border.RenderTransformOrigin>0.5,0.5</Border.RenderTransformOrigin>
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Opacity" Value="0.85"/></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="RenderTransform"><Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96"/></Setter.Value></Setter></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Opacity" Value="0.35"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
+
+    <!-- ── Card — elevated with shadow ───────────────────────────────────── -->
     <Style x:Key="Card" TargetType="Border">
-      <Setter Property="Background" Value="#112240"/><Setter Property="CornerRadius" Value="10"/>
-      <Setter Property="Padding" Value="16"/><Setter Property="BorderBrush" Value="#1E3A5F"/><Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Background" Value="#0C1829"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18"/>
+      <Setter Property="BorderBrush" Value="#1B324E"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Effect">
+        <Setter.Value>
+          <DropShadowEffect Color="#000000" BlurRadius="28" ShadowDepth="3" Opacity="0.40" Direction="270"/>
+        </Setter.Value>
+      </Setter>
     </Style>
+    <Style x:Key="MetricCard" TargetType="Border" BasedOn="{StaticResource Card}">
+      <Setter Property="Padding" Value="20"/>
+    </Style>
+
+    <!-- ── TextBox with focus glow ────────────────────────────────────────── -->
     <Style TargetType="TextBox">
-      <Setter Property="Background" Value="#0D1F36"/><Setter Property="Foreground" Value="#E2E8F0"/>
-      <Setter Property="BorderBrush" Value="#1E3A5F"/><Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Padding" Value="8,6"/><Setter Property="FontSize" Value="12"/><Setter Property="CaretBrush" Value="#50ABF1"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TextBox">
-        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-          <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
-        </Border>
-      </ControlTemplate></Setter.Value></Setter>
-    </Style>
-    <!-- ComboBoxItem dark styling -->
-    <Style TargetType="ComboBoxItem">
-      <Setter Property="Background" Value="#0D1F36"/>
+      <Setter Property="Background" Value="#08152A"/>
       <Setter Property="Foreground" Value="#E2E8F0"/>
-      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="BorderBrush" Value="#1B324E"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="9,7"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="CaretBrush" Value="#3B82F6"/>
+      <Setter Property="SelectionBrush" Value="#1D4ED8"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="TextBox">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="7" Padding="{TemplateBinding Padding}">
+              <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsFocused" Value="True">
+                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
+                <Setter TargetName="Bd" Property="Effect">
+                  <Setter.Value>
+                    <DropShadowEffect Color="#3B82F6" BlurRadius="8" ShadowDepth="0" Opacity="0.30"/>
+                  </Setter.Value>
+                </Setter>
+              </Trigger>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="BorderBrush" Value="#2D5480"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ── ComboBox Item ─────────────────────────────────────────────────── -->
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Background" Value="#08152A"/>
+      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="Padding" Value="10,7"/>
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="Template">
         <Setter.Value>
@@ -261,27 +534,28 @@ function Get-Brush { param([string]$Hex)
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="#1E3A5F"/>
+                <Setter TargetName="Bd" Property="Background" Value="#0F2240"/>
                 <Setter Property="Foreground" Value="White"/>
               </Trigger>
               <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="#0078D4"/>
-                <Setter Property="Foreground" Value="White"/>
+                <Setter TargetName="Bd" Property="Background" Value="#1D3D6B"/>
+                <Setter Property="Foreground" Value="#60B4FF"/>
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
       </Setter>
     </Style>
-    <!-- ComboBox with dark dropdown popup -->
+
+    <!-- ── ComboBox with dark popup ──────────────────────────────────────── -->
     <Style TargetType="ComboBox">
-      <Setter Property="Background" Value="#0D1F36"/>
+      <Setter Property="Background" Value="#08152A"/>
       <Setter Property="Foreground" Value="#E2E8F0"/>
-      <Setter Property="BorderBrush" Value="#1E3A5F"/>
+      <Setter Property="BorderBrush" Value="#1B324E"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Padding" Value="8,5"/>
+      <Setter Property="Padding" Value="9,7"/>
       <Setter Property="FontSize" Value="12"/>
-      <Setter Property="MaxDropDownHeight" Value="300"/>
+      <Setter Property="MaxDropDownHeight" Value="320"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ComboBox">
@@ -292,42 +566,41 @@ function Get-Brush { param([string]$Hex)
                   <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="TgBd" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="7">
                       <Grid>
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="22"/></Grid.ColumnDefinitions>
-                        <Path Grid.Column="1" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#64748B"
-                              HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,2,0,0"/>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/></Grid.ColumnDefinitions>
+                        <Path Grid.Column="1" Data="M 0 0 L 4 5 L 8 0 Z" Fill="#5080A0"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,1,0,0"/>
                       </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                       <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="TgBd" Property="BorderBrush" Value="#2D5A8E"/>
-                        <Setter TargetName="TgBd" Property="Background" Value="#162D4E"/>
+                        <Setter TargetName="TgBd" Property="BorderBrush" Value="#2D5480"/>
+                        <Setter TargetName="TgBd" Property="Background" Value="#0F1E35"/>
                       </Trigger>
                     </ControlTemplate.Triggers>
                   </ControlTemplate>
                 </ToggleButton.Template>
               </ToggleButton>
               <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
-                Margin="8,0,26,0" VerticalAlignment="Center"
+                Margin="9,0,28,0" VerticalAlignment="Center"
                 Content="{TemplateBinding SelectionBoxItem}"
-                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
               <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"
                 Background="Transparent" Foreground="#E2E8F0" BorderThickness="0"
-                Margin="8,0,26,0" VerticalAlignment="Center" HorizontalAlignment="Left"
-                Focusable="True" CaretBrush="#50ABF1"/>
+                Margin="9,0,28,0" VerticalAlignment="Center" Focusable="True" CaretBrush="#3B82F6"/>
               <Popup x:Name="Popup" Placement="Bottom"
                 IsOpen="{TemplateBinding IsDropDownOpen}"
-                AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
                 <Grid SnapsToDevicePixels="True"
                   MinWidth="{TemplateBinding ActualWidth}"
                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                  <Border Background="#0D1F36" BorderBrush="#2D5A8E" BorderThickness="1"
-                          CornerRadius="0,0,6,6" Effect="{x:Null}">
-                    <ScrollViewer SnapsToDevicePixels="True" Background="#0D1F36">
-                      <StackPanel IsItemsHost="True"
-                        KeyboardNavigation.DirectionalNavigation="Contained"/>
+                  <Border Background="#08152A" BorderBrush="#2D5480" BorderThickness="1" CornerRadius="0,0,7,7">
+                    <Border.Effect>
+                      <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.50"/>
+                    </Border.Effect>
+                    <ScrollViewer SnapsToDevicePixels="True" Background="#08152A">
+                      <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                     </ScrollViewer>
                   </Border>
                 </Grid>
@@ -342,39 +615,118 @@ function Get-Brush { param([string]$Hex)
         </Setter.Value>
       </Setter>
     </Style>
+
+    <!-- ── DataGrid ───────────────────────────────────────────────────────── -->
     <Style TargetType="DataGrid">
-      <Setter Property="Background" Value="#0D1F36"/><Setter Property="Foreground" Value="#E2E8F0"/>
-      <Setter Property="BorderThickness" Value="0"/><Setter Property="GridLinesVisibility" Value="Horizontal"/>
-      <Setter Property="HorizontalGridLinesBrush" Value="#1E3A5F"/><Setter Property="RowBackground" Value="#0D1F36"/>
-      <Setter Property="AlternatingRowBackground" Value="#112240"/><Setter Property="HeadersVisibility" Value="Column"/>
-      <Setter Property="AutoGenerateColumns" Value="False"/><Setter Property="FontSize" Value="12"/>
+      <Setter Property="Background" Value="#08152A"/>
+      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+      <Setter Property="HorizontalGridLinesBrush" Value="#0F2038"/>
+      <Setter Property="RowBackground" Value="#08152A"/>
+      <Setter Property="AlternatingRowBackground" Value="#0C1829"/>
+      <Setter Property="HeadersVisibility" Value="Column"/>
+      <Setter Property="AutoGenerateColumns" Value="False"/>
+      <Setter Property="FontSize" Value="12"/>
       <Setter Property="CanUserResizeRows" Value="False"/>
+      <Setter Property="SelectionMode" Value="Single"/>
+      <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+      <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+      <Setter Property="EnableRowVirtualization" Value="True"/>
+      <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     </Style>
     <Style TargetType="DataGridColumnHeader">
-      <Setter Property="Background" Value="#1E3A5F"/><Setter Property="Foreground" Value="#94A3B8"/>
-      <Setter Property="Padding" Value="10,8"/><Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="FontSize" Value="11"/><Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Background" Value="#0B1E36"/>
+      <Setter Property="Foreground" Value="#7A9DC4"/>
+      <Setter Property="Padding" Value="12,9"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="BorderBrush" Value="#1B324E"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style TargetType="DataGridRow">
-      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="Foreground" Value="#CBD5E1"/>
       <Style.Triggers>
-        <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#162D4E"/></Trigger>
-        <Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="#1A3F6B"/></Trigger>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="#0F2238"/>
+          <Setter Property="Foreground" Value="#F1F5F9"/>
+        </Trigger>
+        <Trigger Property="IsSelected" Value="True">
+          <Setter Property="Background" Value="#1A3A60"/>
+          <Setter Property="Foreground" Value="White"/>
+        </Trigger>
       </Style.Triggers>
     </Style>
     <Style TargetType="DataGridCell">
-      <Setter Property="Padding" Value="10,7"/><Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="DataGridCell">
-        <Border Padding="{TemplateBinding Padding}" Background="Transparent"><ContentPresenter VerticalAlignment="Center"/></Border>
-      </ControlTemplate></Setter.Value></Setter>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="DataGridCell">
+            <Border Padding="{TemplateBinding Padding}" Background="Transparent">
+              <ContentPresenter VerticalAlignment="Center"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
+
+    <!-- ── ProgressBar — gradient fill ──────────────────────────────────── -->
     <Style TargetType="ProgressBar">
-      <Setter Property="Background" Value="#1E3A5F"/><Setter Property="Foreground" Value="#0078D4"/>
-      <Setter Property="BorderThickness" Value="0"/><Setter Property="Height" Value="4"/>
+      <Setter Property="Background" Value="#0F2038"/>
+      <Setter Property="Foreground" Value="#3B82F6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Height" Value="5"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ProgressBar">
+            <Border Background="{TemplateBinding Background}" CornerRadius="3">
+              <Border x:Name="PART_Track">
+                <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="3">
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                      <GradientStop Color="#3B82F6" Offset="0"/>
+                      <GradientStop Color="#60B4FF" Offset="1"/>
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
+              </Border>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
-    <Style TargetType="CheckBox"><Setter Property="Foreground" Value="#E2E8F0"/><Setter Property="FontSize" Value="12"/></Style>
-    <Style TargetType="RadioButton"><Setter Property="Foreground" Value="#E2E8F0"/><Setter Property="FontSize" Value="12"/></Style>
-    <Style TargetType="Label"><Setter Property="Foreground" Value="#94A3B8"/><Setter Property="FontSize" Value="11"/><Setter Property="Padding" Value="0,4"/></Style>
+
+    <!-- ── CheckBox ──────────────────────────────────────────────────────── -->
+    <Style TargetType="CheckBox">
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <!-- ── RadioButton ───────────────────────────────────────────────────── -->
+    <Style TargetType="RadioButton">
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <!-- ── Slider ────────────────────────────────────────────────────────── -->
+    <Style TargetType="Slider">
+      <Setter Property="Foreground" Value="#3B82F6"/>
+    </Style>
+
+    <!-- ── TabControl / TabItem ──────────────────────────────────────────── -->
+    <Style TargetType="TabControl">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style TargetType="TabItem">
+      <Setter Property="Background" Value="#08152A"/>
+      <Setter Property="Foreground" Value="#64839E"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+
   </Window.Resources>
   <Grid>
     <Grid.RowDefinitions>
@@ -383,7 +735,8 @@ function Get-Brush { param([string]$Hex)
       <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
     <!-- HEADER -->
-    <Border Grid.Row="0" Background="#070F1C" BorderBrush="#1E3A5F" BorderThickness="0,0,0,1">
+    <Border Grid.Row="0" BorderBrush="#1B324E" BorderThickness="0,0,0,1">
+      <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#060D1A" Offset="0"/><GradientStop Color="#080F1E" Offset="0.5"/><GradientStop Color="#060D1A" Offset="1"/></LinearGradientBrush></Border.Background>
       <Grid Margin="16,0">
         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -396,16 +749,16 @@ function Get-Brush { param([string]$Hex)
           </StackPanel>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <Border Background="#1E3A5F" CornerRadius="20" Padding="12,3" Margin="4,0">
+          <Border Background="#0B1E35" CornerRadius="20" Padding="12,3" Margin="4,0" BorderBrush="#1B324E" BorderThickness="1">
             <StackPanel Orientation="Horizontal">
               <Ellipse x:Name="DotConn" Width="7" Height="7" Fill="#475569" Margin="0,0,6,0" VerticalAlignment="Center"/>
               <TextBlock x:Name="TxtSubName" Text="Not Connected" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
             </StackPanel>
           </Border>
-          <Border Background="#0D2547" CornerRadius="20" Padding="12,3" Margin="4,0">
-            <TextBlock x:Name="TxtTenantShort" Text="--" FontSize="11" Foreground="#50ABF1"/>
+          <Border Background="#0D2547" CornerRadius="20" Padding="6,2" Margin="4,0">
+            <ComboBox x:Name="CboSubSwitcher" Width="240" FontSize="11" Background="#0D2547" Foreground="#50ABF1" BorderThickness="0" ToolTip="Switch subscription"/>
           </Border>
-          <Border Background="#2A1A00" CornerRadius="20" Padding="12,3" Margin="4,0">
+          <Border Background="#1A1200" CornerRadius="20" Padding="12,3" Margin="4,0" BorderBrush="#2D1E00" BorderThickness="1">
             <TextBlock x:Name="TxtLicBadge" Text="Licenses: unknown" FontSize="11" Foreground="#F59E0B"/>
           </Border>
         </StackPanel>
@@ -416,47 +769,61 @@ function Get-Brush { param([string]$Hex)
       </Grid>
     </Border>
     <!-- BODY -->
-    <Grid Grid.Row="1">
+    <Grid Grid.Row="1" Background="#080F1E">
       <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
       <!-- SIDEBAR -->
-      <Border Background="#070F1C" BorderBrush="#1E3A5F" BorderThickness="0,0,1,0">
+      <Border BorderBrush="#1B324E" BorderThickness="0,0,1,0">
+        <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#060C18" Offset="0"/><GradientStop Color="#07101E" Offset="1"/></LinearGradientBrush></Border.Background>
         <DockPanel>
           <StackPanel DockPanel.Dock="Top" Margin="0,8,0,0">
             <TextBlock Text="OVERVIEW" FontSize="9" Foreground="#334155" FontWeight="Bold" Margin="20,6,0,4"/>
             <Button x:Name="NavDash"    Content="Dashboard"         Tag="Dash"   Style="{StaticResource NavActive}"/>
             <Button x:Name="NavLicense" Content="License Check"     Tag="Lic"    Style="{StaticResource NavBtn}"/>
-            <Separator Margin="12,6"/>
+            <Separator Margin="14,8"/>
             <TextBlock Text="DEPLOY" FontSize="9" Foreground="#334155" FontWeight="Bold" Margin="20,4,0,4"/>
             <Button x:Name="NavWizard"  Content="New Deployment"    Tag="Wiz"    Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavHP"      Content="Host Pools"        Tag="HP"     Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavSess"    Content="Session Hosts"     Tag="Sess"   Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavAG"      Content="App Groups"        Tag="AG"     Style="{StaticResource NavBtn}"/>
-            <Separator Margin="12,6"/>
+            <Separator Margin="14,8"/>
             <TextBlock Text="MANAGE" FontSize="9" Foreground="#334155" FontWeight="Bold" Margin="20,4,0,4"/>
             <Button x:Name="NavFSL"     Content="FSLogix Profiles"  Tag="FSL"    Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavScale"   Content="Auto-Scaling"      Tag="Scale"  Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavMon"     Content="Monitoring"        Tag="Mon"    Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavRDP"     Content="RDP and Security"  Tag="RDP"    Style="{StaticResource NavBtn}"/>
-            <Separator Margin="12,6"/>
+            <Separator Margin="14,8"/>
+            <Button x:Name="NavBP"      Content="Best Practices"    Tag="BP"     Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavLog"     Content="Activity Log"      Tag="Log"    Style="{StaticResource NavBtn}"/>
             <Button x:Name="NavSet"     Content="Settings"          Tag="Set"    Style="{StaticResource NavBtn}"/>
           </StackPanel>
           <StackPanel DockPanel.Dock="Bottom" Margin="16,0,16,10">
             <Separator/>
-            <TextBlock Text="AVD Manager v1.0" FontSize="10" Foreground="#334155"/>
+            <TextBlock Text="AVD Manager v1.0" FontSize="10" Foreground="#2D5480" FontWeight="SemiBold"/>
           </StackPanel>
         </DockPanel>
       </Border>
       <!-- CONTENT -->
       <Grid Grid.Column="1">
-
-        <!-- ===== DASHBOARD ===== -->
+        <!-- Loading overlay — shown during data fetches -->
+        <Border x:Name="LoadingOverlay" Visibility="Collapsed" Panel.ZIndex="99"
+                Background="#CC080F1E">
+          <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Width="60" Height="60" CornerRadius="30" Margin="0,0,0,14" Background="#0F2238"
+                    BorderBrush="#1B324E" BorderThickness="1">
+              <Border.Effect><DropShadowEffect Color="#3B82F6" BlurRadius="20" ShadowDepth="0" Opacity="0.4"/></Border.Effect>
+              <TextBlock Text="..." FontSize="22" Foreground="#3B82F6"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock x:Name="LoadingText" Text="Loading..." FontSize="13"
+                       Foreground="#7A9DC4" HorizontalAlignment="Center"/>
+          </StackPanel>
+        </Border>
         <ScrollViewer x:Name="PanelDash" Visibility="Visible" Padding="20">
           <StackPanel>
             <Grid Margin="0,0,0,14">
               <StackPanel>
                 <TextBlock Text="Dashboard" FontSize="22" FontWeight="SemiBold"/>
-                <TextBlock x:Name="TxtDashSub" Text="Connect to Azure to view your AVD environment" FontSize="12" Foreground="#64748B"/>
+                <TextBlock x:Name="TxtDashSub" Text="Connect to Azure to view your AVD environment" FontSize="12" Foreground="#5A7A99"/>
               </StackPanel>
               <Button x:Name="BtnNewDeploy" Content="+ New Deployment" Style="{StaticResource BtnPrimary}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="14,8"/>
             </Grid>
@@ -479,7 +846,7 @@ function Get-Brush { param([string]$Hex)
               <Border Grid.Column="2" Style="{StaticResource Card}" Margin="3,0">
                 <StackPanel>
                   <TextBlock Text="ACTIVE SESSIONS" FontSize="9" Foreground="#64748B" FontWeight="SemiBold"/>
-                  <TextBlock x:Name="MetSess" Text="-" FontSize="30" FontWeight="Bold" Foreground="#F59E0B" Margin="0,4,0,2"/>
+                  <TextBlock x:Name="MetSess" Text="-" FontSize="30" FontWeight="Bold" Foreground="#FBB040" Margin="0,4,0,2"/>
                   <TextBlock Text="across all pools" FontSize="11" Foreground="#475569"/>
                 </StackPanel>
               </Border>
@@ -1145,6 +1512,11 @@ function Get-Brush { param([string]$Hex)
                 <Button x:Name="BtnNewHP" Content="+ New Host Pool" Style="{StaticResource BtnPrimary}" Padding="14,7" Margin="4,0"/>
               </StackPanel>
             </Grid>
+            <Grid Margin="0,0,0,8">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <TextBox x:Name="FilterHP" Margin="0,0,8,0" FontSize="12" ToolTip="Filter host pools by name, type, or region..." />
+              <Button x:Name="BtnExportHP" Grid.Column="1" Content="Export CSV" Style="{StaticResource BtnSec}" Padding="10,6" FontSize="11"/>
+            </Grid>
             <Border Style="{StaticResource Card}">
               <DataGrid x:Name="GridHP" CanUserSortColumns="True" Height="560">
                 <DataGrid.Columns>
@@ -1198,6 +1570,8 @@ function Get-Brush { param([string]$Hex)
                 </StackPanel>
               </StackPanel>
               <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <TextBox x:Name="FilterSess" Width="240" Margin="0,0,8,0" FontSize="12" VerticalAlignment="Center" ToolTip="Filter by VM name, pool, or status..."/>
+                <Button x:Name="BtnExportSess" Content="Export CSV" Style="{StaticResource BtnSec}" Padding="10,7" Margin="4,0"/>
                 <Button x:Name="BtnHealAll"   Content="Heal Unhealthy"  Style="{StaticResource BtnSec}" Padding="12,7" Margin="4,0"/>
                 <Button x:Name="BtnDrainAll"  Content="Drain All"       Style="{StaticResource BtnSec}" Padding="12,7" Margin="4,0"/>
                 <Button x:Name="BtnRefSess"   Content="Refresh"         Style="{StaticResource BtnSec}" Padding="12,7" Margin="4,0"/>
@@ -1239,6 +1613,38 @@ function Get-Brush { param([string]$Hex)
                 </DataGrid.ContextMenu>
               </DataGrid>
             </Border>
+            <!-- Active User Sessions sub-panel -->
+            <Border Style="{StaticResource Card}" Margin="0,10,0,0">
+              <DockPanel>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
+                  <TextBlock Text="Active User Sessions" FontSize="14" FontWeight="SemiBold"/>
+                  <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button x:Name="BtnRefUserSess"    Content="Refresh"       Style="{StaticResource BtnSec}" Padding="10,5" Margin="4,0" FontSize="11"/>
+                    <Button x:Name="BtnMsgUser"        Content="Send Message"  Style="{StaticResource BtnSec}" Padding="10,5" Margin="4,0" FontSize="11"/>
+                    <Button x:Name="BtnDisconnectUser" Content="Disconnect"    Style="{StaticResource BtnSec}" Padding="10,5" Margin="4,0" FontSize="11"/>
+                    <Button x:Name="BtnLogoffUser"     Content="Force Logoff"  Style="{StaticResource BtnRed}"  Padding="10,5" Margin="4,0" FontSize="11"/>
+                    <Button x:Name="BtnExportUserSess" Content="Export CSV"    Style="{StaticResource BtnSec}" Padding="10,5" Margin="4,0" FontSize="11"/>
+                  </StackPanel>
+                </Grid>
+                <DataGrid x:Name="GridUserSess" Height="190" CanUserSortColumns="True">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="User UPN"      Binding="{Binding UserUPN}"   Width="230"/>
+                    <DataGridTextColumn Header="Host Pool"     Binding="{Binding PoolName}"  Width="160"/>
+                    <DataGridTextColumn Header="Session Host"  Binding="{Binding HostName}"  Width="180"/>
+                    <DataGridTextColumn Header="Session ID"    Binding="{Binding SessionId}" Width="85"/>
+                    <DataGridTemplateColumn Header="State" Width="100">
+                      <DataGridTemplateColumn.CellTemplate><DataTemplate>
+                        <Border CornerRadius="4" Padding="6,2" Background="{Binding StateBg}" HorizontalAlignment="Left">
+                          <TextBlock Text="{Binding State}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding StateFg}"/>
+                        </Border>
+                      </DataTemplate></DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Application"   Binding="{Binding App}"       Width="*"/>
+                    <DataGridTextColumn Header="Login Time"    Binding="{Binding LoginTime}"  Width="130"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </DockPanel>
+            </Border>
           </StackPanel>
         </ScrollViewer>
 
@@ -1278,7 +1684,10 @@ function Get-Brush { param([string]$Hex)
                 <DockPanel>
                   <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
                     <TextBlock Text="Published Apps" FontSize="14" FontWeight="SemiBold"/>
-                    <Button x:Name="BtnPubApp" Content="+ Publish" Style="{StaticResource BtnPrimary}" HorizontalAlignment="Right" Padding="10,5" FontSize="11"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                      <Button x:Name="BtnAssignUsers" Content="Assign Users" Style="{StaticResource BtnSec}" Padding="10,5" Margin="0,0,6,0" FontSize="11"/>
+                      <Button x:Name="BtnPubApp" Content="+ Publish App" Style="{StaticResource BtnPrimary}" Padding="10,5" FontSize="11"/>
+                    </StackPanel>
                   </Grid>
                   <DataGrid x:Name="GridApps" CanUserSortColumns="False">
                     <DataGrid.Columns>
@@ -1497,6 +1906,89 @@ function Get-Brush { param([string]$Hex)
           </StackPanel>
         </ScrollViewer>
 
+
+        <!-- ===== BEST PRACTICES ===== -->
+        <ScrollViewer x:Name="PanelBP" Visibility="Collapsed" Padding="20">
+          <StackPanel>
+            <Grid Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="AVD Best Practices Assessment" FontSize="22" FontWeight="SemiBold"/>
+                <TextBlock Text="Checks your environment against Microsoft AVD best practices and security baseline" FontSize="12" Foreground="#64748B"/>
+              </StackPanel>
+              <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <Button x:Name="BtnRunBP"    Content="Run Assessment"  Style="{StaticResource BtnPrimary}" Padding="16,8" Margin="4,0"/>
+                <Button x:Name="BtnExportBP" Content="Export CSV"      Style="{StaticResource BtnSec}"     Padding="12,8" Margin="4,0"/>
+              </StackPanel>
+            </Grid>
+            <!-- Score cards -->
+            <Grid Margin="0,0,0,12">
+              <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+              <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,6,0">
+                <StackPanel>
+                  <TextBlock Text="OVERALL SCORE" FontSize="9" Foreground="#64748B" FontWeight="SemiBold"/>
+                  <TextBlock x:Name="BPScore" Text="-" FontSize="34" FontWeight="Bold" Foreground="#50ABF1" Margin="0,4,0,2"/>
+                  <TextBlock x:Name="BPScoreLbl" Text="/ 100" FontSize="11" Foreground="#475569"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Style="{StaticResource Card}" Margin="3,0">
+                <StackPanel>
+                  <TextBlock Text="PASSED" FontSize="9" Foreground="#64748B" FontWeight="SemiBold"/>
+                  <TextBlock x:Name="BPPass" Text="-" FontSize="34" FontWeight="Bold" Foreground="#10B981" Margin="0,4,0,2"/>
+                  <TextBlock Text="checks" FontSize="11" Foreground="#475569"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="2" Style="{StaticResource Card}" Margin="3,0">
+                <StackPanel>
+                  <TextBlock Text="WARNINGS" FontSize="9" Foreground="#64748B" FontWeight="SemiBold"/>
+                  <TextBlock x:Name="BPWarn" Text="-" FontSize="34" FontWeight="Bold" Foreground="#F59E0B" Margin="0,4,0,2"/>
+                  <TextBlock Text="checks" FontSize="11" Foreground="#475569"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="3" Style="{StaticResource Card}" Margin="6,0,0,0">
+                <StackPanel>
+                  <TextBlock Text="FAILED" FontSize="9" Foreground="#64748B" FontWeight="SemiBold"/>
+                  <TextBlock x:Name="BPFail" Text="-" FontSize="34" FontWeight="Bold" Foreground="#EF4444" Margin="0,4,0,2"/>
+                  <TextBlock Text="checks" FontSize="11" Foreground="#475569"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+            <Border Style="{StaticResource Card}">
+              <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                  <TextBlock Text="Filter category: " FontSize="12" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                  <ComboBox x:Name="BPCatFilter" Width="200" FontSize="11">
+                    <ComboBoxItem Content="All Categories"         IsSelected="True"/>
+                    <ComboBoxItem Content="Host Pool Configuration"/>
+                    <ComboBoxItem Content="Session Hosts"/>
+                    <ComboBoxItem Content="Identity and Security"/>
+                    <ComboBoxItem Content="Networking"/>
+                    <ComboBoxItem Content="Monitoring"/>
+                    <ComboBoxItem Content="FSLogix Profiles"/>
+                    <ComboBoxItem Content="Cost Optimization"/>
+                    <ComboBoxItem Content="Prerequisites"/>
+                  </ComboBox>
+                </StackPanel>
+                <DataGrid x:Name="GridBP" CanUserSortColumns="True" Height="540">
+                  <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Status" Width="80">
+                      <DataGridTemplateColumn.CellTemplate><DataTemplate>
+                        <Border CornerRadius="4" Padding="6,2" Background="{Binding StatusBg}" HorizontalAlignment="Left">
+                          <TextBlock Text="{Binding Status}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding StatusFg}"/>
+                        </Border>
+                      </DataTemplate></DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Category"    Binding="{Binding Category}"   Width="170"/>
+                    <DataGridTextColumn Header="Check"       Binding="{Binding Check}"      Width="280"/>
+                    <DataGridTextColumn Header="Finding"     Binding="{Binding Finding}"    Width="*"/>
+                    <DataGridTextColumn Header="Remediation" Binding="{Binding Remediation}" Width="300"/>
+                    <DataGridTextColumn Header="Priority"    Binding="{Binding Priority}"   Width="80"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </DockPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+
         <!-- ===== LOG ===== -->
         <Border x:Name="PanelLog" Visibility="Collapsed" Style="{StaticResource Card}" Margin="16">
           <DockPanel>
@@ -1559,7 +2051,7 @@ function Get-Brush { param([string]$Hex)
     </Grid><!-- /body -->
 
     <!-- STATUS BAR -->
-    <Border Grid.Row="2" Background="#07101E" BorderBrush="#1E3A5F" BorderThickness="0,1,0,0">
+    <Border Grid.Row="2" Background="#060C18" BorderBrush="#1B324E" BorderThickness="0,1,0,0">
       <Grid Margin="16,0">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
           <TextBlock x:Name="TxtStatus" Text="Ready" FontSize="11" Foreground="#64748B" Margin="0,0,14,0"/>
@@ -1599,7 +2091,7 @@ function X { param([string]$n) $Window.FindName($n) }
 
 # Header
 $BtnConnect     = X "BtnConnect";    $BtnRefreshAll = X "BtnRefreshAll"
-$TxtSubName     = X "TxtSubName";    $TxtTenantShort = X "TxtTenantShort"
+$TxtSubName     = X "TxtSubName";    $CboSubSwitcher = X "CboSubSwitcher"
 $TxtLicBadge    = X "TxtLicBadge";   $DotConn        = X "DotConn"
 
 # Nav
@@ -1608,8 +2100,9 @@ $NavWizard= X "NavWizard";$NavHP      = X "NavHP"
 $NavSess  = X "NavSess";  $NavAG      = X "NavAG"
 $NavFSL   = X "NavFSL";   $NavScale   = X "NavScale"
 $NavMon   = X "NavMon";   $NavRDP     = X "NavRDP"
+$NavBP    = X "NavBP"
 $NavLog   = X "NavLog";   $NavSet     = X "NavSet"
-$AllNavBtns = @($NavDash,$NavLicense,$NavWizard,$NavHP,$NavSess,$NavAG,$NavFSL,$NavScale,$NavMon,$NavRDP,$NavLog,$NavSet)
+$AllNavBtns = @($NavDash,$NavLicense,$NavWizard,$NavHP,$NavSess,$NavAG,$NavFSL,$NavScale,$NavMon,$NavRDP,$NavBP,$NavLog,$NavSet)
 
 # Panels
 $PanelDash  = X "PanelDash";  $PanelLic   = X "PanelLic"
@@ -1617,9 +2110,12 @@ $PanelWiz   = X "PanelWiz";   $PanelHP    = X "PanelHP"
 $PanelSess  = X "PanelSess";  $PanelAG    = X "PanelAG"
 $PanelFSL   = X "PanelFSL";   $PanelScale = X "PanelScale"
 $PanelMon   = X "PanelMon";   $PanelRDP   = X "PanelRDP"
+$PanelBP    = X "PanelBP";    $BPScore    = X "BPScore";   $BPPass  = X "BPPass"
+$BPWarn     = X "BPWarn";     $BPFail     = X "BPFail";    $GridBP  = X "GridBP"
+$BPCatFilter= X "BPCatFilter"; $BtnRunBP  = X "BtnRunBP";  $BtnExportBP = X "BtnExportBP"
 $PanelLog   = X "PanelLog";   $PanelSet   = X "PanelSet"
-$AllPanels  = @($PanelDash,$PanelLic,$PanelWiz,$PanelHP,$PanelSess,$PanelAG,$PanelFSL,$PanelScale,$PanelMon,$PanelRDP,$PanelLog,$PanelSet)
-$PanelMap   = @{ Dash=$PanelDash; Lic=$PanelLic; Wiz=$PanelWiz; HP=$PanelHP; Sess=$PanelSess; AG=$PanelAG; FSL=$PanelFSL; Scale=$PanelScale; Mon=$PanelMon; RDP=$PanelRDP; Log=$PanelLog; Set=$PanelSet }
+$AllPanels  = @($PanelDash,$PanelLic,$PanelWiz,$PanelHP,$PanelSess,$PanelAG,$PanelFSL,$PanelScale,$PanelMon,$PanelRDP,$PanelBP,$PanelLog,$PanelSet)
+$PanelMap   = @{ Dash=$PanelDash; Lic=$PanelLic; Wiz=$PanelWiz; HP=$PanelHP; Sess=$PanelSess; AG=$PanelAG; FSL=$PanelFSL; Scale=$PanelScale; Mon=$PanelMon; RDP=$PanelRDP; BP=$PanelBP; Log=$PanelLog; Set=$PanelSet }
 
 # Dashboard
 $MetHP=$null;$MetHosts=$null;$MetSess=$null;$MetLic=$null;$MetWS=$null;$GridDash=$null;$TxtDashSub=$null;$BtnDashRefresh=$null;$BtnNewDeploy=$null
@@ -1695,18 +2191,25 @@ $WS = @()
 for ($i=1;$i -le 8;$i++) { $WS += X "WS$i" }
 
 # HP / Sess / AG / FSL
-$GridHP    = X "GridHP";    $BtnRefHP   = X "BtnRefHP";   $BtnNewHP   = X "BtnNewHP"
-$GridSess  = X "GridSess";  $SessFilter = X "SessFilter";  $BtnRefSess = X "BtnRefSess"
-$BtnHealAll = X "BtnHealAll"; $BtnDrainAll = X "BtnDrainAll"
-$GridAG    = X "GridAG";    $GridApps   = X "GridApps";   $BtnRefAG   = X "BtnRefAG";   $BtnNewAG = X "BtnNewAG"
+$GridHP      = X "GridHP";       $BtnRefHP      = X "BtnRefHP";    $BtnNewHP      = X "BtnNewHP"
+$FilterHP    = X "FilterHP";     $BtnExportHP   = X "BtnExportHP"
+$GridSess    = X "GridSess";     $SessFilter    = X "SessFilter";   $BtnRefSess    = X "BtnRefSess"
+$FilterSess  = X "FilterSess";   $BtnExportSess = X "BtnExportSess"
+$BtnHealAll  = X "BtnHealAll";   $BtnDrainAll   = X "BtnDrainAll"
+$GridUserSess     = X "GridUserSess"
+$BtnRefUserSess   = X "BtnRefUserSess";   $BtnMsgUser        = X "BtnMsgUser"
+$BtnDisconnectUser= X "BtnDisconnectUser"; $BtnLogoffUser     = X "BtnLogoffUser"
+$BtnExportUserSess= X "BtnExportUserSess"
+$GridAG    = X "GridAG";    $GridApps   = X "GridApps";   $BtnRefAG = X "BtnRefAG"; $BtnNewAG = X "BtnNewAG"
+$BtnAssignUsers = X "BtnAssignUsers"
 $GridFSL   = X "GridFSL";   $FSLTotal   = X "FSLTotal";   $FSLSize    = X "FSLSize"
 $FSLQuota  = X "FSLQuota";  $SliderFSLAlert = X "SliderFSLAlert"; $TxtFSLAlert = X "TxtFSLAlert"
 $BtnFSLLocks = X "BtnFSLLocks"; $BtnFSLTmp = X "BtnFSLTmp"; $BtnFSLDiag = X "BtnFSLDiag"; $BtnFSLRef = X "BtnFSLRef"
 $BtnRefScale = X "BtnRefScale"; $BtnNewScale = X "BtnNewScale"; $BtnAddAlert = X "BtnAddAlert"
 $BtnNewLAW = X "BtnNewLAW"; $BtnNewSA = X "BtnNewSA"; $BtnNewKV = X "BtnNewKV"
 $BtnNewRG = X "BtnNewRG"; $BtnNewWS = X "BtnNewWS"; $BtnPubApp = X "BtnPubApp"
-$FSLQuota  = X "FSLQuota";  $SliderFSLAlert = X "SliderFSLAlert"; $TxtFSLAlert = X "TxtFSLAlert"
-$GridScale = X "GridScale"; $GridLAW    = X "GridLAW";    $GridAlerts = X "GridAlerts"
+$GridScale = X "GridScale"; $GridLAW = X "GridLAW"; $GridAlerts = X "GridAlerts"
+$CboSubSwitcher = X "CboSubSwitcher"
 
 # RDP
 $RDPPool    = X "RDPPool";   $RDPPreset  = X "RDPPreset"; $RDPProps = X "RDPProps"
@@ -1722,6 +2225,7 @@ $TxtStatusDetail = X "TxtStatusDetail"; $TxtCountdown = X "TxtCountdown"
 $StatusDot     = X "StatusDot";     $TxtConnStatus  = X "TxtConnStatus"
 $MainLogBox    = X "MainLogBox";    $Global:LogBox  = $MainLogBox
 $BtnClearLog   = X "BtnClearLog"
+$LoadingOverlay = X "LoadingOverlay"; $LoadingText = X "LoadingText"
 $SetSubId      = X "SetSubId";      $SetTenantId    = X "SetTenantId"
 $SetLocation   = X "SetLocation";   $SetRefresh     = X "SetRefresh"
 $TxtSetRefresh = X "TxtSetRefresh"; $BtnSaveSet     = X "BtnSaveSet"
@@ -1739,18 +2243,67 @@ $Script:NavInactiveStyle = $Window.FindResource("NavBtn")
 # ============================================================================
 # NAVIGATION
 # ============================================================================
+function Show-Loading { param([string]$Text="Loading...")
+    try { $script:LoadingText.Text = $Text; $script:LoadingOverlay.Visibility=[System.Windows.Visibility]::Visible } catch {}
+}
+function Hide-Loading {
+    try { $script:LoadingOverlay.Visibility=[System.Windows.Visibility]::Collapsed } catch {}
+}
+
 function Switch-Panel {
     param([string]$Tag)
-    foreach ($p in $AllPanels)    { $p.Visibility = [System.Windows.Visibility]::Collapsed }
-    foreach ($b in $AllNavBtns)   { try { $b.Style = if ($b.Tag -eq $Tag) { $Script:NavActiveStyle } else { $Script:NavInactiveStyle } } catch {} }
-    if ($PanelMap.ContainsKey($Tag)) { $PanelMap[$Tag].Visibility = [System.Windows.Visibility]::Visible }
+    $newPanel = if ($PanelMap.ContainsKey($Tag)) { $PanelMap[$Tag] } else { return }
+
+    # Update nav styles immediately
+    foreach ($b in $AllNavBtns) {
+        try { $b.Style = if ($b.Tag -eq $Tag) { $Script:NavActiveStyle } else { $Script:NavInactiveStyle } } catch {}
+    }
+
+    $currentPanel = $AllPanels | Where-Object { $_.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+
+    $dur150 = [System.Windows.Duration]::new([TimeSpan]::FromMilliseconds(150))
+    $dur220 = [System.Windows.Duration]::new([TimeSpan]::FromMilliseconds(220))
+
+    if ($currentPanel -and $currentPanel -ne $newPanel) {
+        # Capture for closure
+        $cp = $currentPanel; $np = $newPanel
+        $fadeOut          = [System.Windows.Media.Animation.DoubleAnimation]::new()
+        $fadeOut.From     = 1.0; $fadeOut.To = 0.0; $fadeOut.Duration = $dur150
+        $fadeOut.EasingFunction = [System.Windows.Media.Animation.CubicEase]::new()
+        $fadeOut.EasingFunction.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseIn
+
+        $fadeOut.Add_Completed(({
+            param($s,$e)
+            $cp.Visibility = [System.Windows.Visibility]::Collapsed
+            $cp.Opacity    = 1.0
+            $np.Opacity    = 0.0
+            $np.Visibility = [System.Windows.Visibility]::Visible
+            $fadeIn         = [System.Windows.Media.Animation.DoubleAnimation]::new()
+            $fadeIn.From    = 0.0; $fadeIn.To = 1.0; $fadeIn.Duration = $dur220
+            $easeOut        = [System.Windows.Media.Animation.CubicEase]::new()
+            $easeOut.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseOut
+            $fadeIn.EasingFunction = $easeOut
+            $np.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeIn)
+        }.GetNewClosure()))
+
+        $currentPanel.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
+    } elseif ($newPanel) {
+        foreach ($p in $AllPanels) { $p.Visibility = [System.Windows.Visibility]::Collapsed }
+        $np = $newPanel; $np.Opacity = 0.0; $np.Visibility = [System.Windows.Visibility]::Visible
+        $fadeIn = [System.Windows.Media.Animation.DoubleAnimation]::new()
+        $fadeIn.From = 0.0; $fadeIn.To = 1.0; $fadeIn.Duration = $dur220
+        $np.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeIn)
+    }
+
+    # Load data for the panel
     switch ($Tag) {
-        "HP"    { if ($Global:IsConnected) { Load-HostPools } }
-        "Sess"  { if ($Global:IsConnected) { Load-SessionHosts } }
-        "AG"    { if ($Global:IsConnected) { Load-AppGroups } }
-        "Scale" { if ($Global:IsConnected) { Load-ScalingPlans } }
-        "Mon"   { if ($Global:IsConnected) { Load-Monitoring } }
-        "Lic"   { if ($Global:IsConnected -and -not $Script:LicScanned) { Invoke-LicenseScan } }
+        "HP"    { if ($Global:IsConnected) { Show-Loading "Loading host pools...";   Load-HostPools;       Hide-Loading } }
+        "Sess"  { if ($Global:IsConnected) { Show-Loading "Loading session hosts...";Load-SessionHosts; Load-UserSessions; Hide-Loading } }
+        "AG"    { if ($Global:IsConnected) { Show-Loading "Loading app groups...";   Load-AppGroups;       Hide-Loading } }
+        "Scale" { if ($Global:IsConnected) { Show-Loading "Loading scaling plans...";Load-ScalingPlans;    Hide-Loading } }
+        "Mon"   { if ($Global:IsConnected) { Show-Loading "Loading monitoring...";   Load-Monitoring;      Hide-Loading } }
+        "Lic"   { if ($Global:IsConnected -and -not $Script:LicScanned) { Show-Loading "Scanning licenses..."; Invoke-LicenseScan; Hide-Loading } }
+        "BP"    { if ($Global:IsConnected) { Show-Loading "Running assessment...";   Invoke-BestPracticesCheck; Hide-Loading } }
         "Wiz"   { if ($Global:IsConnected) { Load-WizardDropdowns } }
     }
 }
@@ -1781,7 +2334,8 @@ function Set-Connected { param([bool]$State)
         try { $script:TxtSubName.Text           = $Global:Subscription.Name; $script:TxtSubName.Foreground = Get-Brush "#E2E8F0" } catch {}
     }
     if ($State -and $Global:TenantId) {
-        try { $script:TxtTenantShort.Text       = $Global:TenantId.Substring(0,[Math]::Min(8,$Global:TenantId.Length)) + "..." } catch {}
+        # TenantId now shown in subscription switcher tooltip, not a separate label
+        try { $script:CboSubSwitcher.ToolTip = "Tenant: $($Global:TenantId)" } catch {}
     }
 }
 
@@ -1795,15 +2349,7 @@ function Invoke-LicenseScan {
     Set-Status "Scanning licenses via Microsoft Graph..." 20
     Write-Log "Starting license assessment..." "STEP"
     try {
-        $tokenObj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -EA Stop
-        # Az 12+ returns SecureString; earlier versions return plain string
-        if ($tokenObj.Token -is [System.Security.SecureString]) {
-            $bstr  = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token)
-            $token = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
-        } else {
-            $token = $tokenObj.Token
-        }
+        $token = Get-GraphToken   # cached, auto-refreshes before expiry
         $hdr   = @{ Authorization="Bearer $token"; "Content-Type"="application/json" }
         $skus  = (Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/subscribedSkus" -Headers $hdr -EA Stop).value
 
@@ -1945,7 +2491,7 @@ function Load-HostPools {
             })
             $hpNames += $hp.Name
         }
-        try { $script:GridHP.ItemsSource      = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()) } catch {}
+        try { $script:GridHP.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()); $Global:Sync["CachedHPRows"] = $rows.ToArray() } catch {}
         try { $script:SessFilter.ItemsSource  = $hpNames; $script:SessFilter.SelectedIndex = 0 } catch {}
         try { $script:RDPPool.ItemsSource     = @($hpAll | ForEach-Object {$_.Name}) } catch {}
         Write-Log "Host pools loaded: $($hpAll.Count)" "OK"
@@ -1981,7 +2527,7 @@ function Load-SessionHosts {
                 })
             }
         }
-        try { $script:GridSess.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()) } catch {}
+        try { $script:GridSess.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()); $Global:Sync["CachedSessRows"] = $rows.ToArray() } catch {}
     } catch { Write-Log "Load-SessionHosts error: $_" "WARN" }
     Set-Status "Ready" 0
 }
@@ -2149,6 +2695,868 @@ function Load-WizardLAWs {
 }
 
 # ============================================================================
+# PREREQUISITES CHECK
+# ============================================================================
+function Test-Prerequisites {
+    $issues = [System.Collections.Generic.List[string]]::new()
+    $warnings = [System.Collections.Generic.List[string]]::new()
+
+    # PowerShell version
+    if ($PSVersionTable.PSVersion.Major -lt 5) {
+        $issues.Add("PowerShell 5.1+ required (found $($PSVersionTable.PSVersion))")
+    }
+
+    # Required Az modules with minimum versions
+    $required = @{
+        "Az.Accounts"                = "2.12.0"
+        "Az.DesktopVirtualization"   = "3.1.0"
+        "Az.Compute"                 = "5.0.0"
+        "Az.Network"                 = "5.0.0"
+        "Az.KeyVault"                = "4.0.0"
+        "Az.OperationalInsights"     = "3.0.0"
+        "Az.Resources"               = "6.0.0"
+        "Az.Storage"                 = "5.0.0"
+    }
+    foreach ($mod in $required.GetEnumerator()) {
+        $installed = Get-Module -ListAvailable -Name $mod.Key | Sort-Object Version -Descending | Select-Object -First 1
+        if (-not $installed) {
+            $issues.Add("Missing module: $($mod.Key) (install with: Install-Module $($mod.Key) -Scope CurrentUser)")
+        } elseif ([Version]$installed.Version -lt [Version]$mod.Value) {
+            $warnings.Add("$($mod.Key) v$($installed.Version) is below recommended v$($mod.Value). Run: Update-Module $($mod.Key)")
+        }
+    }
+
+    # ExecutionPolicy
+    $ep = Get-ExecutionPolicy -Scope CurrentUser
+    if ($ep -eq "Restricted") {
+        $issues.Add("ExecutionPolicy is Restricted. Run: Set-ExecutionPolicy RemoteSigned -Scope CurrentUser")
+    }
+
+    if ($issues.Count -gt 0) {
+        $msg = "Prerequisites check failed:`n`n" + ($issues -join "`n") + "`n`n" +
+               $(if ($warnings.Count -gt 0) {"Warnings:`n" + ($warnings -join "`n") + "`n`n"} else {""}) +
+               "The tool may not work correctly until these are resolved."
+        [System.Windows.MessageBox]::Show($msg, "AVD Manager - Prerequisites", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning) | Out-Null
+        Write-Log "Prerequisites: $($issues.Count) issue(s), $($warnings.Count) warning(s)" "WARN"
+        $issues | ForEach-Object { Write-Log "  [PREREQ] $_" "ERROR" }
+    } elseif ($warnings.Count -gt 0) {
+        Write-Log "Prerequisites OK with $($warnings.Count) module version warning(s)" "WARN"
+        $warnings | ForEach-Object { Write-Log "  [WARN] $_" "WARN" }
+    } else {
+        Write-Log "Prerequisites check passed (all modules OK)" "OK"
+    }
+    return ($issues.Count -eq 0)
+}
+
+# ============================================================================
+# AUDIT LOG  (separate file — tracks all writes/deletes)
+# ============================================================================
+$Global:AuditLog = ".\AVD-Manager-Audit-$(Get-Date -f 'yyyyMMdd').log"
+
+function Write-Audit {
+    param([string]$Action, [string]$Resource, [string]$Detail="", [string]$Result="OK")
+    $ts  = Get-Date -f "yyyy-MM-dd HH:mm:ss"
+    $who = try { (Get-AzContext).Account.Id } catch { "unknown" }
+    $sub = try { (Get-AzContext).Subscription.Name } catch { "unknown" }
+    $line = "[$ts] [$Result] User=$who Sub=$sub Action=$Action Resource=$Resource $Detail"
+    Add-Content $Global:AuditLog $line -EA SilentlyContinue
+    Write-Log "[AUDIT] $Action $Resource" "INFO"
+}
+
+# ============================================================================
+# CREDENTIAL HYGIENE  (clear sensitive strings from memory)
+# ============================================================================
+function Clear-SensitiveData {
+    param([hashtable]$Params)
+    foreach ($key in @("AdminPass","DomainPass","RegToken")) {
+        if ($Params.ContainsKey($key)) {
+            $Params[$key] = [string]::new('*', [Math]::Min(8, $Params[$key].Length))
+        }
+    }
+}
+
+function Protect-LogMessage {
+    # Strip anything that looks like a token/password from log strings
+    param([string]$Message)
+    $Message = $Message -replace '(?i)(token|password|secret|key)\s*[:=]\s*\S+', '$1: [REDACTED]'
+    $Message = $Message -replace 'eyJ[A-Za-z0-9+/]{40,}', '[JWT_REDACTED]'
+    return $Message
+}
+
+# ============================================================================
+# WINDOW STATE PERSISTENCE
+# ============================================================================
+$Global:WinStateFile = ".\AVD-Manager-WinState.json"
+
+function Save-WindowState {
+    try {
+        $state = @{
+            Left   = [int]$Window.Left
+            Top    = [int]$Window.Top
+            Width  = [int]$Window.Width
+            Height = [int]$Window.Height
+            State  = $Window.WindowState.ToString()
+        }
+        $state | ConvertTo-Json | Set-Content $Global:WinStateFile -Encoding UTF8 -EA SilentlyContinue
+    } catch {}
+}
+
+function Restore-WindowState {
+    if (-not (Test-Path $Global:WinStateFile)) { return }
+    try {
+        $s = Get-Content $Global:WinStateFile -Raw | ConvertFrom-Json -EA Stop
+        if ($s.State -eq "Normal") {
+            if ($s.Left   -ge 0 -and $s.Left   -lt [System.Windows.SystemParameters]::VirtualScreenWidth)  { $Window.Left   = $s.Left }
+            if ($s.Top    -ge 0 -and $s.Top    -lt [System.Windows.SystemParameters]::VirtualScreenHeight) { $Window.Top    = $s.Top }
+            if ($s.Width  -ge 800)  { $Window.Width  = $s.Width }
+            if ($s.Height -ge 600)  { $Window.Height = $s.Height }
+        } elseif ($s.State -eq "Maximized") {
+            $Window.WindowState = [System.Windows.WindowState]::Maximized
+        }
+    } catch {}
+}
+
+# ============================================================================
+# CONFIGURATION EXPORT / IMPORT
+# ============================================================================
+function Export-ToolConfig {
+    $dlg = New-Object Microsoft.Win32.SaveFileDialog
+    $dlg.FileName = "AVD-Manager-Config-$(Get-Date -f 'yyyyMMdd').json"
+    $dlg.Filter   = "JSON Files (*.json)|*.json|All Files (*.*)|*.*"
+    $dlg.InitialDirectory = [Environment]::GetFolderPath("Desktop")
+    if (-not $dlg.ShowDialog()) { return }
+    try {
+        $exportBy   = "unknown"; try { $exportBy   = (Get-AzContext).Account.Id }        catch {}
+        $lastSub    = "";        try { $lastSub    = $script:SetSubId.Text }              catch {}
+        $lastTenant = "";        try { $lastTenant = $script:SetTenantId.Text }           catch {}
+        $lastLoc    = "eastus"; try { $lastLoc    = $script:SetLocation.SelectedValue }  catch {}
+        $rdpPreset  = "";        try { $rdpPreset  = $script:RDPProps.Text }              catch {}
+        $cfg = @{
+            ExportDate    = (Get-Date -f "yyyy-MM-dd HH:mm:ss")
+            ExportBy      = $exportBy
+            LastSub       = $lastSub
+            LastTenant    = $lastTenant
+            LastLocation  = $lastLoc
+            RefreshSecs   = $Global:RefreshSecs
+            RDPPresets    = @{ Balanced = $rdpPreset }
+        }
+        $cfg | ConvertTo-Json -Depth 10 | Set-Content $dlg.FileName -Encoding UTF8
+        Show-Toast "Configuration exported to $([System.IO.Path]::GetFileName($dlg.FileName))"
+        Write-Log "Config exported: $($dlg.FileName)" "OK"
+    } catch { Write-Log "Export config error: $_" "ERROR" }
+}
+
+function Import-ToolConfig {
+    $dlg = New-Object Microsoft.Win32.OpenFileDialog
+    $dlg.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*"
+    $dlg.InitialDirectory = [Environment]::GetFolderPath("Desktop")
+    if (-not $dlg.ShowDialog()) { return }
+    try {
+        $cfg = Get-Content $dlg.FileName -Raw | ConvertFrom-Json -EA Stop
+        if ($cfg.LastSub)      { try{$script:SetSubId.Text      = $cfg.LastSub}catch{} }
+        if ($cfg.LastTenant)   { try{$script:SetTenantId.Text   = $cfg.LastTenant}catch{} }
+        if ($cfg.LastLocation) { try{$script:SetLocation.SelectedValue = $cfg.LastLocation}catch{} }
+        if ($cfg.RefreshSecs)  { try{$script:SetRefresh.Value   = $cfg.RefreshSecs}catch{} }
+        if ($cfg.RDPPresets.Balanced) { try{$script:RDPProps.Text = $cfg.RDPPresets.Balanced}catch{} }
+        Show-Toast "Configuration imported from $([System.IO.Path]::GetFileName($dlg.FileName))"
+        Write-Log "Config imported: $($dlg.FileName)" "OK"
+    } catch { Write-Log "Import config error: $_" "ERROR" }
+}
+
+# ============================================================================
+# PRE-DEPLOYMENT VALIDATION (quota, network, naming)
+# ============================================================================
+function Test-DeploymentReadiness {
+    param([hashtable]$P)
+    $issues = [System.Collections.Generic.List[string]]::new()
+    $warnings = [System.Collections.Generic.List[string]]::new()
+
+    # 1. Naming convention check
+    if ($P.HpName -notmatch '^[a-zA-Z][a-zA-Z0-9\-]{0,62}[a-zA-Z0-9]$') {
+        $issues.Add("Host pool name must start with a letter, be 2-64 chars, alphanumeric + hyphens")
+    }
+    if ($P.Prefix -notmatch '^[a-zA-Z][a-zA-Z0-9\-]{0,11}$') {
+        $warnings.Add("VM prefix should be short (max 12 chars) to avoid OS hostname truncation on Win10")
+    }
+
+    # 2. VM quota check
+    try {
+        $quota = Get-AzVMUsage -Location $P.Loc -EA SilentlyContinue
+        $cores  = $quota | Where-Object { $_.Name.Value -eq "cores" }
+        $vmCores = @{ "Standard_D2s_v5"=2; "Standard_D4s_v5"=4; "Standard_D8s_v5"=8; "Standard_D16s_v5"=16;
+                      "Standard_E4s_v5"=4; "Standard_E8s_v5"=8; "Standard_E16s_v5"=16;
+                      "Standard_B4ms"=4;   "Standard_B8ms"=8 }
+        $coreCount = $vmCores[$P.VmSz]
+        if (-not $coreCount) { $coreCount = 4 }
+        $needed = $P.VmCnt * $coreCount
+        if ($cores) {
+            $available = $cores.Limit - $cores.CurrentValue
+            if ($available -lt $needed) {
+                $issues.Add("Insufficient vCPU quota in $($P.Loc): need $needed, available $available. Request increase: https://portal.azure.com")
+            } else {
+                Write-Log "Quota OK: need $needed vCPUs, $available available in $($P.Loc)" "OK"
+            }
+        }
+    } catch { $warnings.Add("Could not verify vCPU quota — check manually before deploying") }
+
+    # 3. Network reachability (DNS check for AVD endpoint)
+    try {
+        $dns = [System.Net.Dns]::Resolve("rdweb.wvd.microsoft.com")
+        Write-Log "DNS check OK: rdweb.wvd.microsoft.com resolves to $($dns.AddressList[0])" "OK"
+    } catch { $warnings.Add("DNS resolution failed for rdweb.wvd.microsoft.com — verify outbound connectivity") }
+
+    # 4. Subnet space check
+    if ($P.SubnetName -and $P.VNetName -and $P.VNetRG) {
+        try {
+            $vnet   = Get-AzVirtualNetwork -Name $P.VNetName -ResourceGroupName $P.VNetRG -EA Stop
+            $subnet = $vnet.Subnets | Where-Object { $_.Name -eq $P.SubnetName } | Select-Object -First 1
+            if ($subnet) {
+                # Count available IPs (Azure reserves 5 per subnet)
+                $prefix  = $subnet.AddressPrefix[0]
+                $bits    = [int]($prefix -split "/")[1]
+                $total   = [Math]::Pow(2, 32-$bits) - 5
+                $used    = $subnet.IpConfigurations.Count
+                $avail   = $total - $used
+                if ($avail -lt $P.VmCnt) {
+                    $issues.Add("Subnet '$($P.SubnetName)' has ~$avail IPs available but you need $($P.VmCnt) for VMs (+NICs)")
+                } else {
+                    Write-Log "Subnet space OK: ~$avail IPs available, need $($P.VmCnt)" "OK"
+                }
+            }
+        } catch { $warnings.Add("Could not verify subnet IP space — check subnet has enough addresses") }
+    }
+
+    # 5. Admin credential complexity (already validated in wizard, re-check here)
+    if ($P.AdminPass.Length -lt 12) { $issues.Add("Admin password must be at least 12 characters") }
+
+    # 6. Hybrid AD specific: DC reachability hint
+    if ($P.JoinType -eq "HybridAD" -and -not $P.DomainName) {
+        $issues.Add("Hybrid AD Join selected but Domain FQDN is empty")
+    }
+
+    # 7. Duplicate VM name check
+    if ($P.VNetRG) {
+        for ($i=0; $i -lt $P.VmCnt; $i++) {
+            $vmName = "$($P.Prefix)-$i"
+            $exists = Get-AzVM -ResourceGroupName $P.RG -Name $vmName -EA SilentlyContinue
+            if ($exists) { $warnings.Add("VM '$vmName' already exists in RG '$($P.RG)' — it will be skipped") }
+        }
+    }
+
+    # Report
+    if ($issues.Count -gt 0 -or $warnings.Count -gt 0) {
+        $msg = ""
+        if ($issues.Count -gt 0) { $msg += "BLOCKING ISSUES:`n" + ($issues -join "`n") + "`n`n" }
+        if ($warnings.Count -gt 0) { $msg += "WARNINGS (non-blocking):`n" + ($warnings -join "`n") }
+        $btn = if ($issues.Count -gt 0) { [System.Windows.MessageBoxButton]::OK } else { [System.Windows.MessageBoxButton]::YesNo }
+        $ico = if ($issues.Count -gt 0) { [System.Windows.MessageBoxImage]::Error } else { [System.Windows.MessageBoxImage]::Warning }
+        $title = if ($issues.Count -gt 0) { "Deployment Blocked" } else { "Deployment Warnings" }
+        $r = [System.Windows.MessageBox]::Show($msg, $title, $btn, $ico)
+        if ($issues.Count -gt 0) { return $false }
+        return ($r -eq [System.Windows.MessageBoxResult]::Yes)
+    }
+    return $true
+}
+
+# ============================================================================
+# BEST PRACTICES ASSESSMENT ENGINE
+# ============================================================================
+$Script:BPRows = [System.Collections.Generic.List[PSObject]]::new()
+
+function Add-BPRow {
+    param([string]$Status, [string]$Category, [string]$Check, [string]$Finding, [string]$Remediation, [string]$Priority="Medium")
+    $statusBg = switch ($Status) { "PASS"{"#0A2010"} "WARN"{"#2A1A00"} "FAIL"{"#2A0A0A"} default{"#1E3A5F"} }
+    $statusFg = switch ($Status) { "PASS"{"#10B981"} "WARN"{"#F59E0B"} "FAIL"{"#EF4444"} default{"#94A3B8"} }
+    $Script:BPRows.Add([PSCustomObject]@{
+        Status=$Status; StatusBg=$statusBg; StatusFg=$statusFg
+        Category=$Category; Check=$Check; Finding=$Finding
+        Remediation=$Remediation; Priority=$Priority
+    })
+}
+
+function Invoke-BestPracticesCheck {
+    if (-not $Global:IsConnected) { return }
+    Set-Status "Running best practices assessment..." 10
+    Write-Log "=== Best Practices Assessment starting ===" "STEP"
+    $Script:BPRows.Clear()
+
+    try {
+        $hpAll    = @(Invoke-AzWithRetry { Get-AzWvdHostPool -EA Stop })
+        $wsAll    = @(Get-AzWvdWorkspace -EA SilentlyContinue)
+        $lawAll   = @(Get-AzOperationalInsightsWorkspace -EA SilentlyContinue)
+        $scaleAll = @(Get-AzWvdScalingPlan -EA SilentlyContinue)
+
+        # ── Category: Prerequisites ──────────────────────────────────────────
+        $azVer = (Get-Module -ListAvailable Az.DesktopVirtualization | Sort-Object Version -Descending | Select-Object -First 1).Version
+        if ($azVer -and [Version]$azVer -ge [Version]"3.1.0") {
+            Add-BPRow "PASS" "Prerequisites" "Az.DesktopVirtualization version" "v$azVer installed" "" "Low"
+        } else {
+            Add-BPRow "WARN" "Prerequisites" "Az.DesktopVirtualization version" "v$azVer — v3.1.0+ recommended" "Run: Update-Module Az.DesktopVirtualization" "Medium"
+        }
+
+        foreach ($hp in $hpAll) {
+            $rg    = ($hp.Id -split "/")[4]
+            $hosts = @(Get-AzWvdSessionHost -HostPoolName $hp.Name -ResourceGroupName $rg -EA SilentlyContinue)
+            $ags   = @(Get-AzWvdApplicationGroup -EA SilentlyContinue | Where-Object {$_.HostPoolArmPath -like "*/$($hp.Name)"})
+            $name  = $hp.Name
+
+            # ── Category: Host Pool Configuration ───────────────────────────
+            # Start VM on Connect
+            if ($hp.StartVMOnConnect) {
+                Add-BPRow "PASS" "Host Pool Configuration" "Start VM on Connect: $name" "Enabled — idle VMs deallocate saving cost" "" "High"
+            } else {
+                Add-BPRow "FAIL" "Host Pool Configuration" "Start VM on Connect: $name" "Disabled — VMs run 24/7 increasing cost" "Enable: Update-AzWvdHostPool -StartVMOnConnect:`$true" "High"
+            }
+
+            # Max session limit vs VM size
+            if ($hp.HostPoolType -eq "Pooled") {
+                $maxSess = $hp.MaxSessionLimit
+                if ($maxSess -ge 2 -and $maxSess -le 30) {
+                    Add-BPRow "PASS" "Host Pool Configuration" "Max session limit: $name" "$maxSess sessions/host — within recommended range" "" "Medium"
+                } elseif ($maxSess -gt 30) {
+                    Add-BPRow "WARN" "Host Pool Configuration" "Max session limit: $name" "$maxSess sessions/host — may cause performance degradation" "Validate VM size can support this density; consider D8s_v5 or larger" "Medium"
+                } else {
+                    Add-BPRow "WARN" "Host Pool Configuration" "Max session limit: $name" "$maxSess sessions/host — very low density" "Increase limit or reduce VM count to improve cost efficiency" "Low"
+                }
+
+                # Scaling plan
+                $hasScale = $scaleAll | Where-Object { $_.HostPoolReference.HostPoolArmPath -like "*/$name" }
+                if ($hasScale) {
+                    Add-BPRow "PASS" "Host Pool Configuration" "Scaling plan: $name" "Assigned: $($hasScale.Name)" "" "High"
+                } else {
+                    Add-BPRow "FAIL" "Host Pool Configuration" "Scaling plan: $name" "No scaling plan — hosts run 24/7" "Create a scaling plan with peak/off-peak schedules to reduce cost by 40-60%" "High"
+                }
+            }
+
+            # RDP properties
+            $rdp = $hp.CustomRdpProperty
+            if ($rdp -match "screen-capture-protection:i:1") {
+                Add-BPRow "PASS" "Identity and Security" "Screen capture protection: $name" "Enabled" "" "High"
+            } else {
+                Add-BPRow "FAIL" "Identity and Security" "Screen capture protection: $name" "Disabled — users can screenshot session content" "Add: screen-capture-protection:i:1 to RDP properties" "High"
+            }
+            if ($rdp -match "watermarking:i:1") {
+                Add-BPRow "PASS" "Identity and Security" "Session watermarking: $name" "Enabled" "" "Medium"
+            } else {
+                Add-BPRow "WARN" "Identity and Security" "Session watermarking: $name" "Disabled — harder to trace data exfil via photos" "Add: watermarking:i:1 to RDP properties" "Medium"
+            }
+            if ($rdp -match "redirectclipboard:i:0" -or $rdp -notmatch "redirectclipboard") {
+                Add-BPRow "WARN" "Identity and Security" "Clipboard redirection: $name" "Clipboard may be unrestricted" "Consider: redirectclipboard:i:0 for sensitive environments" "Medium"
+            } else {
+                Add-BPRow "PASS" "Identity and Security" "Clipboard redirection: $name" "Explicitly configured in RDP properties" "" "Medium"
+            }
+
+            # App group has workspace
+            if ($ags.Count -eq 0) {
+                Add-BPRow "FAIL" "Host Pool Configuration" "App groups: $name" "No app groups found" "Create a Desktop or RemoteApp app group and associate with a workspace" "High"
+            } else {
+                $inWorkspace = $wsAll | Where-Object { $ags | Where-Object {$_.Id -in $_.ApplicationGroupReference} }
+                if ($inWorkspace) {
+                    Add-BPRow "PASS" "Host Pool Configuration" "Workspace assignment: $name" "$($ags.Count) app group(s) in workspace" "" "High"
+                } else {
+                    Add-BPRow "WARN" "Host Pool Configuration" "Workspace assignment: $name" "App groups may not be linked to a workspace" "Assign app groups to a workspace so users can discover them" "High"
+                }
+            }
+
+            # Validation environment
+            if ($hp.ValidationEnvironment) {
+                Add-BPRow "WARN" "Host Pool Configuration" "Validation environment: $name" "Marked as validation — receives early service updates" "Only use validation pools for testing, not production users" "Medium"
+            }
+
+            # ── Category: Session Hosts ──────────────────────────────────────
+            if ($hosts.Count -eq 0) {
+                Add-BPRow "WARN" "Session Hosts" "Session hosts: $name" "No session hosts registered" "Add session hosts to make this pool functional" "High"
+            } else {
+                $unhealthy = @($hosts | Where-Object { $_.Status -notin @("Available","Upgrading") })
+                if ($unhealthy.Count -eq 0) {
+                    Add-BPRow "PASS" "Session Hosts" "Host health: $name" "All $($hosts.Count) host(s) Available" "" "High"
+                } else {
+                    Add-BPRow "FAIL" "Session Hosts" "Host health: $name" "$($unhealthy.Count)/$($hosts.Count) host(s) unhealthy: $($unhealthy.Name -join ', ')" "Check VM health, restart or drain unhealthy hosts, review event logs" "High"
+                }
+
+                # Drain mode check
+                $drained = @($hosts | Where-Object { $_.AllowNewSession -eq $false })
+                if ($drained.Count -gt 0) {
+                    Add-BPRow "WARN" "Session Hosts" "Drain mode: $name" "$($drained.Count) host(s) in drain mode" "Remove drain mode on hosts unless intentionally draining: $($drained.Name -join ', ')" "Medium"
+                }
+
+                # OS version check (look for Windows 10 multi-session on older builds)
+                $oldOS = @($hosts | Where-Object { $_.OSVersion -and $_.OSVersion -match "10\.0\.19041" })
+                if ($oldOS.Count -gt 0) {
+                    Add-BPRow "WARN" "Session Hosts" "OS version: $name" "$($oldOS.Count) host(s) on older Win10 build (19041)" "Consider upgrading to Windows 11 multi-session for better performance and support lifecycle" "Medium"
+                }
+
+                # Recent heartbeat
+                $stale = @($hosts | Where-Object { $_.LastHeartBeat -and (New-TimeSpan -Start $_.LastHeartBeat -End (Get-Date)).TotalMinutes -gt 15 })
+                if ($stale.Count -gt 0) {
+                    Add-BPRow "WARN" "Session Hosts" "Heartbeat: $name" "$($stale.Count) host(s) haven't reported in 15+ min" "Check VM power state and AVD agent health on: $($stale.Name -join ', ')" "High"
+                }
+            }
+
+            # ── Category: Identity and Security ─────────────────────────────
+            # Note: join type isn't directly on HP object; check first host
+            if ($hosts.Count -gt 0) {
+                $firstHost = $hosts[0]
+                if ($firstHost.VirtualMachineId) {
+                    $vmRG   = ($firstHost.VirtualMachineId -split "/")[4]
+                    $vmName = ($firstHost.VirtualMachineId -split "/")[-1]
+                    $vm     = Get-AzVM -ResourceGroupName $vmRG -Name $vmName -EA SilentlyContinue
+                    if ($vm) {
+                        $entraExt   = $vm.Extensions | Where-Object { $_.Publisher -eq "Microsoft.Azure.ActiveDirectory" }
+                        $domainExt  = $vm.Extensions | Where-Object { $_.Publisher -eq "Microsoft.Compute" -and $_.TypePropertiesType -eq "JsonADDomainExtension" }
+                        $intuneExt  = $vm.Extensions | Where-Object { $_.Publisher -eq "Microsoft.Azure.ActiveDirectory" -and $_.Settings.mdmId }
+                        if ($entraExt) {
+                            Add-BPRow "PASS" "Identity and Security" "Entra ID join: $name" "VMs are Entra ID joined" "" "High"
+                            if ($intuneExt -or ($entraExt.Settings -match "mdmId")) {
+                                Add-BPRow "PASS" "Identity and Security" "Intune enrollment: $name" "Intune MDM enrollment configured" "" "High"
+                            } else {
+                                Add-BPRow "WARN" "Identity and Security" "Intune enrollment: $name" "Entra ID joined but Intune MDM not detected" "Enable Intune enrollment for compliance policies and patch management" "High"
+                            }
+                        } elseif ($domainExt) {
+                            Add-BPRow "PASS" "Identity and Security" "Hybrid AD join: $name" "VMs are domain joined" "" "Medium"
+                            Add-BPRow "INFO" "Identity and Security" "Join type recommendation: $name" "Using Hybrid AD join" "Consider migrating to Entra ID join for cloud-native management and simpler ops" "Low"
+                        }
+
+                        # Disk encryption
+                        $diskEnc = $vm.StorageProfile.OsDisk.ManagedDisk.DiskEncryptionSet
+                        if ($diskEnc) {
+                            Add-BPRow "PASS" "Identity and Security" "Disk encryption: $vmName" "Customer-managed key encryption enabled" "" "Medium"
+                        } else {
+                            Add-BPRow "WARN" "Identity and Security" "Disk encryption: $vmName" "Using platform-managed keys (PMK)" "Consider customer-managed keys (CMK) for regulated industries" "Low"
+                        }
+                    }
+                }
+            }
+        }
+
+        # ── Category: Monitoring ─────────────────────────────────────────────
+        if ($lawAll.Count -gt 0) {
+            Add-BPRow "PASS" "Monitoring" "Log Analytics workspace" "$($lawAll.Count) workspace(s) found" "" "High"
+            foreach ($law in $lawAll) {
+                if ($law.RetentionInDays -ge 30) {
+                    Add-BPRow "PASS" "Monitoring" "Log retention: $($law.Name)" "$($law.RetentionInDays) day retention" "" "Medium"
+                } else {
+                    Add-BPRow "WARN" "Monitoring" "Log retention: $($law.Name)" "$($law.RetentionInDays) day retention — below 30 day minimum" "Increase retention for compliance: Update-AzOperationalInsightsWorkspace -RetentionInDays 90" "Medium"
+                }
+            }
+
+            # Check if diagnostic settings exist on any host pool
+            foreach ($hp in $hpAll) {
+                try {
+                    $diag = Get-AzDiagnosticSetting -ResourceId $hp.Id -EA SilentlyContinue
+                    if ($diag) {
+                        Add-BPRow "PASS" "Monitoring" "Diagnostics: $($hp.Name)" "Diagnostic settings configured" "" "High"
+                    } else {
+                        Add-BPRow "FAIL" "Monitoring" "Diagnostics: $($hp.Name)" "No diagnostic settings — AVD Insights blind" "Enable: Portal > Host Pool > Diagnostic settings > Add setting to LAW" "High"
+                    }
+                } catch {}
+            }
+        } else {
+            Add-BPRow "FAIL" "Monitoring" "Log Analytics workspace" "No workspace found — no visibility into AVD health" "Create a Log Analytics workspace and enable AVD Insights/Diagnostics" "High"
+        }
+
+        # ── Category: Cost Optimization ──────────────────────────────────────
+        $pooledNoScale = @($hpAll | Where-Object { $_.HostPoolType -eq "Pooled" -and -not ($scaleAll | Where-Object { $_.HostPoolReference.HostPoolArmPath -like "*/$($_.Name)" }) })
+        if ($pooledNoScale.Count -eq 0) {
+            Add-BPRow "PASS" "Cost Optimization" "Scaling plans coverage" "All pooled host pools have scaling plans" "" "High"
+        } else {
+            Add-BPRow "FAIL" "Cost Optimization" "Scaling plans coverage" "$($pooledNoScale.Count) pooled pool(s) without scaling plans" "Add scaling plans to: $($pooledNoScale.Name -join ', ')" "High"
+        }
+
+        # Summarise
+        $pass = ($Script:BPRows | Where-Object {$_.Status -eq "PASS"}).Count
+        $warn = ($Script:BPRows | Where-Object {$_.Status -eq "WARN"}).Count
+        $fail = ($Script:BPRows | Where-Object {$_.Status -eq "FAIL"}).Count
+        $total = $pass + $warn + $fail
+        $score = if ($total -gt 0) { [Math]::Round(($pass * 100.0 + $warn * 50.0) / $total, 0) } else { 0 }
+
+        try { $script:BPScore.Text = "$score"; $script:BPPass.Text = "$pass"; $script:BPWarn.Text = "$warn"; $script:BPFail.Text = "$fail" } catch {}
+        $scoreColor = if ($score -ge 80) {"#10B981"} elseif ($score -ge 60) {"#F59E0B"} else {"#EF4444"}
+        try { $script:BPScore.Foreground = Get-Brush $scoreColor } catch {}
+        try { $script:GridBP.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($Script:BPRows.ToArray()) } catch {}
+
+        Write-Log "Best practices complete: Score=$score/100  PASS=$pass  WARN=$warn  FAIL=$fail" "OK"
+        Show-Toast "Assessment complete — Score: $score/100" $scoreColor
+
+    } catch { Write-Log "Best practices error: $_" "ERROR" }
+    Set-Status "Ready" 0
+}
+
+# ============================================================================
+# UTILITY HELPERS
+# ============================================================================
+
+# Retry wrapper for transient Azure errors (429, 503, 504)
+function Invoke-AzWithRetry {
+    param([scriptblock]$Action, [int]$MaxAttempts=3, [int]$DelaySeconds=3)
+    for ($attempt=1; $attempt -le $MaxAttempts; $attempt++) {
+        try { return (& $Action) }
+        catch {
+            $msg = $_.Exception.Message
+            $isTransient = $msg -match "429|503|504|TooManyRequests|ServiceUnavailable|GatewayTimeout|throttl"
+            if ($isTransient -and $attempt -lt $MaxAttempts) {
+                Write-Log "Transient error (attempt $attempt/$MaxAttempts), retrying in $($DelaySeconds*$attempt)s..." "WARN"
+                Start-Sleep -Seconds ($DelaySeconds * $attempt)
+            } else { throw }
+        }
+    }
+}
+
+# Toast - 4-second auto-clearing status bar message
+function Show-Toast {
+    param([string]$Message, [string]$Color="#10B981")
+    try { $script:TxtStatus.Text=$Message; $script:TxtStatus.Foreground=Get-Brush $Color } catch {}
+    $t = [System.Windows.Threading.DispatcherTimer]::new()
+    $t.Interval = [TimeSpan]::FromSeconds(4)
+    $t.Add_Tick({ try{$script:TxtStatus.Text="Ready";$script:TxtStatus.Foreground=Get-Brush "#64748B"}catch{}; $this.Stop() })
+    $t.Start()
+}
+
+# Confirmation dialog
+function Confirm-Action {
+    param([string]$Message, [string]$Title="Confirm Action")
+    $r = [System.Windows.MessageBox]::Show($Message,$Title,
+        [System.Windows.MessageBoxButton]::YesNo,[System.Windows.MessageBoxImage]::Warning)
+    return ($r -eq [System.Windows.MessageBoxResult]::Yes)
+}
+
+# Export DataGrid to CSV via SaveFileDialog
+function Export-GridData {
+    param([System.Windows.Controls.DataGrid]$Grid, [string]$DefaultName="export")
+    if (-not $Grid -or $Grid.Items.Count -eq 0) { Show-Toast "No data to export" "#F59E0B"; return }
+    $dlg = New-Object Microsoft.Win32.SaveFileDialog
+    $dlg.FileName = "$DefaultName-$(Get-Date -f 'yyyyMMdd-HHmm').csv"
+    $dlg.Filter   = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*"
+    $dlg.InitialDirectory = [Environment]::GetFolderPath("Desktop")
+    if (-not $dlg.ShowDialog()) { return }
+    try {
+        @($Grid.Items) | Export-Csv -Path $dlg.FileName -NoTypeInformation -Encoding UTF8
+        Show-Toast "Exported $($Grid.Items.Count) rows to $([System.IO.Path]::GetFileName($dlg.FileName))"
+        Write-Log "Exported to: $($dlg.FileName)" "OK"
+    } catch { Write-Log "Export error: $_" "ERROR" }
+}
+
+# Wizard step input validation
+function Test-WizardStep {
+    param([int]$Step)
+    $errs = [System.Collections.Generic.List[string]]::new()
+    switch ($Step) {
+        1 {
+            $n = try{$script:WizHPName.Text.Trim()}catch{""}
+            if (-not $n)                           { $errs.Add("Host Pool Name is required") }
+            elseif ($n -notmatch '^[a-zA-Z0-9\-]{1,64}$') { $errs.Add("Name: alphanumeric + hyphens only, max 64 chars") }
+            if (-not (try{$script:WizRG.SelectedItem}catch{$null}))     { $errs.Add("Resource Group is required") }
+            if (-not (try{$script:WizRegion.SelectedValue}catch{$null})) { $errs.Add("Azure Region is required") }
+        }
+        3 {
+            if (-not (try{$script:WizVNet.SelectedItem}catch{$null}))   { $errs.Add("Virtual Network is required") }
+            if (-not (try{$script:WizSubnet.SelectedItem}catch{$null})) { $errs.Add("Subnet is required") }
+            $admin = try{$script:WizAdminUser.Text.Trim()}catch{""}
+            if (-not $admin) { $errs.Add("Admin Username is required") }
+            $pass = try{$script:WizAdminPass.Password}catch{""}
+            if ($pass.Length -lt 12) { $errs.Add("Password must be at least 12 characters") }
+            elseif ($pass -notmatch '[A-Z]' -or $pass -notmatch '[0-9]') { $errs.Add("Password needs uppercase letter and number") }
+        }
+        4 {
+            if (-not (try{$script:WizVMSize.SelectedItem}catch{$null})) { $errs.Add("VM Size is required") }
+            $pfx = try{$script:WizVMPrefix.Text.Trim()}catch{""}
+            if (-not $pfx) { $errs.Add("VM Name Prefix is required") }
+        }
+        5 {
+            $hybrid = $false; try{$hybrid=$script:RdoHybrid.IsChecked}catch{}
+            if ($hybrid) {
+                if (-not (try{$script:WizDomain.Text.Trim()}catch{""}))     { $errs.Add("Domain FQDN is required for Hybrid AD Join") }
+                if (-not (try{$script:WizDomainUser.Text.Trim()}catch{""})) { $errs.Add("Domain Join Account is required") }
+                if (-not (try{$script:WizDomainPass.Password}catch{""}))    { $errs.Add("Domain Join Password is required") }
+            }
+        }
+    }
+    if ($errs.Count -gt 0) {
+        [System.Windows.MessageBox]::Show(
+            "Please fix before continuing:`n`n" + ($errs -join "`n"),
+            "Validation", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning) | Out-Null
+        return $false
+    }
+    return $true
+}
+
+# ============================================================================
+# USER SESSION MANAGEMENT
+# ============================================================================
+function Load-UserSessions {
+    if (-not $Global:IsConnected) { return }
+    Set-Status "Loading user sessions..." 30
+    try {
+        $filter = try{$script:SessFilter.SelectedItem}catch{"(All Pools)"}
+        $hpAll  = @(Invoke-AzWithRetry { Get-AzWvdHostPool -EA Stop })
+        $rows   = [System.Collections.Generic.List[PSObject]]::new()
+        foreach ($hp in $hpAll) {
+            if ($filter -and $filter -ne "(All Pools)" -and $hp.Name -ne $filter) { continue }
+            $rg = ($hp.Id -split "/")[4]
+            $sessions = @(Get-AzWvdUserSession -HostPoolName $hp.Name -ResourceGroupName $rg -EA SilentlyContinue)
+            foreach ($s in $sessions) {
+                $hostName = ($s.Name -split "/")[1]
+                $state    = if ($s.SessionState) {$s.SessionState} else {"Connected"}
+                $stateBg  = switch ($state) { "Active"{"#0A2010"} "Disconnected"{"#2A0A0A"} "Pending"{"#2A1A00"} default{"#1E3A5F"} }
+                $stateFg  = switch ($state) { "Active"{"#10B981"} "Disconnected"{"#EF4444"} "Pending"{"#F59E0B"} default{"#94A3B8"} }
+                $rows.Add([PSCustomObject]@{
+                    UserUPN  =$s.UserPrincipalName; PoolName=$hp.Name; HostName=$hostName
+                    SessionId=($s.Name -split "/")[-1]; State=$state; StateBg=$stateBg; StateFg=$stateFg
+                    App=if($s.ApplicationType -eq "RemoteApp"){"RemoteApp"}else{"Full Desktop"}
+                    LoginTime=if($s.CreateTime){$s.CreateTime.ToString("MM/dd HH:mm")}else{"--"}
+                    RG=$rg; HPName=$hp.Name; SessObj=$s
+                })
+            }
+        }
+        try { $script:GridUserSess.ItemsSource=[System.Collections.ObjectModel.ObservableCollection[PSObject]]($rows.ToArray()) } catch {}
+        Write-Log "User sessions: $($rows.Count) active" "OK"
+    } catch { Write-Log "Load-UserSessions error: $_" "WARN" }
+    Set-Status "Ready" 0
+}
+
+function Send-UserMessage {
+    param($Row)
+    if (-not $Row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    $msg = [Microsoft.VisualBasic.Interaction]::InputBox("Message to $($Row.UserUPN):", "Send Message", "")
+    if (-not $msg) { return }
+    try {
+        Send-AzWvdUserSessionMessage -HostPoolName $Row.HPName -ResourceGroupName $Row.RG `
+            -SessionHostName $Row.HostName -UserSessionId $Row.SessionId `
+            -MessageTitle "IT Administrator" -MessageBody $msg -EA Stop | Out-Null
+        Show-Toast "Message sent to $($Row.UserUPN)"
+        Write-Log "Message sent to $($Row.UserUPN)" "OK"
+    } catch { Write-Log "Send message error: $_" "ERROR"; Show-Toast "Send failed" "#EF4444" }
+}
+
+function Invoke-Disconnect {
+    param($Row)
+    if (-not $Row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    if (-not (Confirm-Action "Disconnect $($Row.UserUPN)?`nSession remains in Disconnected state.")) { return }
+    try {
+        Disconnect-AzWvdUserSession -HostPoolName $Row.HPName -ResourceGroupName $Row.RG `
+            -SessionHostName $Row.HostName -Id $Row.SessionId -EA Stop | Out-Null
+        Show-Toast "Disconnected $($Row.UserUPN)"; Write-Log "Disconnected: $($Row.UserUPN)" "OK"
+        Load-UserSessions
+    } catch { Write-Log "Disconnect error: $_" "ERROR"; Show-Toast "Disconnect failed" "#EF4444" }
+}
+
+function Invoke-ForceLogoff {
+    param($Row)
+    if (-not $Row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    if (-not (Confirm-Action "Force logoff $($Row.UserUPN)?`nUnsaved work will be LOST.")) { return }
+    try {
+        Remove-AzWvdUserSession -HostPoolName $Row.HPName -ResourceGroupName $Row.RG `
+            -SessionHostName $Row.HostName -Id $Row.SessionId -Force -EA Stop | Out-Null
+        Show-Toast "Logged off $($Row.UserUPN)"; Write-Log "Force logoff: $($Row.UserUPN)" "OK"
+        Load-UserSessions
+    } catch { Write-Log "Logoff error: $_" "ERROR"; Show-Toast "Logoff failed" "#EF4444" }
+}
+
+# ============================================================================
+# SUBSCRIPTION SWITCHER
+# ============================================================================
+function Load-Subscriptions {
+    try {
+        $subs = @(Get-AzSubscription -EA SilentlyContinue)
+        $items = @($subs | ForEach-Object {"$($_.Name)  [$($_.Id.Substring(0,8))...]"})
+        try { $script:CboSubSwitcher.ItemsSource = $items } catch {}
+        $ctx = Get-AzContext -EA SilentlyContinue
+        if ($ctx) {
+            $idx = 0
+            for ($i=0; $i -lt $subs.Count; $i++) {
+                if ($subs[$i].Id -eq $ctx.Subscription.Id) { $idx=$i; break }
+            }
+            try { $script:CboSubSwitcher.SelectedIndex = $idx } catch {}
+        }
+        $Global:SubList = $subs
+    } catch {}
+}
+
+# ============================================================================
+# REAL COST API (Azure Cost Management)
+# ============================================================================
+function Get-AzRealCost {
+    param([string]$Scope, [int]$Days=30)
+    if (-not $Global:IsConnected) { return $null }
+    try {
+        $tokenObj = Get-AzAccessToken -ResourceUrl "https://management.azure.com" -EA Stop
+        $token = if ($tokenObj.Token -is [System.Security.SecureString]) {
+            $b=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token)
+            $t=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto($b)
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b); $t
+        } else { $tokenObj.Token }
+        $end   = (Get-Date).ToString("yyyy-MM-dd")
+        $start = (Get-Date).AddDays(-$Days).ToString("yyyy-MM-dd")
+        $body  = @{
+            type="ActualCost"; timeframe="Custom"
+            timePeriod=@{from=$start;to=$end}
+            dataset=@{granularity="None";aggregation=@{totalCost=@{name="Cost";function="Sum"}}}
+        } | ConvertTo-Json -Depth 10
+        $hdr  = @{Authorization="Bearer $token";"Content-Type"="application/json"}
+        $uri  = "https://management.azure.com/$Scope/providers/Microsoft.CostManagement/query?api-version=2023-03-01"
+        $resp = Invoke-RestMethod -Uri $uri -Method Post -Headers $hdr -Body $body -EA Stop
+        return [Math]::Round(($resp.properties.rows | ForEach-Object {$_[0]} | Measure-Object -Sum).Sum, 2)
+    } catch { Write-Log "Cost API: $_" "WARN"; return $null }
+}
+
+# ============================================================================
+# LOG ANALYTICS / AVD INSIGHTS
+# ============================================================================
+function Get-AVDInsights {
+    param([string]$WorkspaceId)
+    if (-not $WorkspaceId -or -not $Global:IsConnected) { return $null }
+    try {
+        $tokenObj = Get-AzAccessToken -ResourceUrl "https://api.loganalytics.io" -EA Stop
+        $token = if ($tokenObj.Token -is [System.Security.SecureString]) {
+            $b=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token)
+            $t=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto($b)
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b); $t
+        } else { $tokenObj.Token }
+        $hdr = @{Authorization="Bearer $token";"Content-Type"="application/json"}
+        $queries = @{
+            Connections = "WVDConnections | where TimeGenerated > ago(24h) | summarize count()"
+            Errors      = "WVDErrors | where TimeGenerated > ago(24h) | summarize count()"
+            TopUsers    = "WVDConnections | where TimeGenerated > ago(7d) | summarize Sessions=count() by UserName | top 5 by Sessions desc"
+        }
+        $results = @{}
+        foreach ($q in $queries.GetEnumerator()) {
+            try {
+                $body = @{query=$q.Value} | ConvertTo-Json
+                $r    = Invoke-RestMethod -Uri "https://api.loganalytics.io/v1/workspaces/$WorkspaceId/query" -Method Post -Headers $hdr -Body $body -EA Stop
+                $results[$q.Key] = $r.tables[0].rows
+            } catch { $results[$q.Key] = $null }
+        }
+        return $results
+    } catch { Write-Log "AVD Insights error: $_" "WARN"; return $null }
+}
+
+# ============================================================================
+# GRAPH TOKEN CACHE (auto-refresh before expiry)
+# ============================================================================
+$Global:GraphToken       = $null
+$Global:GraphTokenExpiry = [DateTime]::MinValue
+
+function Get-GraphToken {
+    if ($Global:GraphToken -and [DateTime]::UtcNow -lt $Global:GraphTokenExpiry.AddMinutes(-5)) {
+        return $Global:GraphToken
+    }
+    $obj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -EA Stop
+    $raw = if ($obj.Token -is [System.Security.SecureString]) {
+        $b=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($obj.Token)
+        $t=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto($b)
+        [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b); $t
+    } else { $obj.Token }
+    $Global:GraphToken       = $raw
+    $Global:GraphTokenExpiry = if ($obj.ExpiresOn) {$obj.ExpiresOn.UtcDateTime} else {[DateTime]::UtcNow.AddHours(1)}
+    return $Global:GraphToken
+}
+
+# ============================================================================
+# ACTUAL SESSION HOST VM DEPLOYMENT
+# ============================================================================
+function Deploy-SessionHosts {
+    param([hashtable]$P)
+    function DLog { param($m,$l="DEPLOY") $P.Sync.LogQueue.Enqueue(@{Timestamp=(Get-Date -f "HH:mm:ss");Level=$l;Message=$m}) }
+    function SP   { param([int]$p) $P.Sync.Progress=$p }
+
+    $imgMap = @{
+        "Windows 11 Enterprise multi-session + Microsoft 365 Apps (latest) [RECOMMENDED]"=@{Pub="MicrosoftWindowsDesktop";Off="office-365";Sku="win11-23h2-avd-m365"}
+        "Windows 11 Enterprise multi-session (latest)"                                   =@{Pub="MicrosoftWindowsDesktop";Off="windows-11";Sku="win11-23h2-avd"}
+        "Windows 10 Enterprise multi-session + Microsoft 365 Apps (latest)"              =@{Pub="MicrosoftWindowsDesktop";Off="office-365";Sku="win10-22h2-avd-m365"}
+        "Windows 10 Enterprise multi-session (latest)"                                   =@{Pub="MicrosoftWindowsDesktop";Off="windows-10";Sku="win10-22h2-avd"}
+        "Windows Server 2022 Datacenter Azure Edition"                                   =@{Pub="MicrosoftWindowsServer";Off="WindowsServer";Sku="2022-datacenter-azure-edition"}
+        "Windows Server 2019 Datacenter Azure Edition"                                   =@{Pub="MicrosoftWindowsServer";Off="WindowsServer";Sku="2019-datacenter-azure-edition"}
+    }
+    $img = $imgMap[$P.ImageName]
+    if (-not $img) { $img = @{Pub="MicrosoftWindowsDesktop";Off="office-365";Sku="win11-23h2-avd-m365"} }
+
+    $secPass = ConvertTo-SecureString $P.AdminPass -AsPlainText -Force
+    $cred    = New-Object System.Management.Automation.PSCredential($P.AdminUser, $secPass)
+
+    # Resolve subnet object
+    DLog "Resolving network: $($P.VNetRG) / $($P.VNetName) / $($P.SubnetName)..." "STEP"
+    $vnetObj   = Get-AzVirtualNetwork -Name $P.VNetName -ResourceGroupName $P.VNetRG -EA Stop
+    $subnetObj = $vnetObj.Subnets | Where-Object {$_.Name -eq $P.SubnetName} | Select-Object -First 1
+    if (-not $subnetObj) { throw "Subnet '$($P.SubnetName)' not found in VNet '$($P.VNetName)'" }
+
+    $baseProgress = 65
+    for ($i=0; $i -lt $P.VmCount; $i++) {
+        if ($P.Sync.CancelToken) { DLog "Cancelled at VM $i" "WARN"; return }
+        $vmName = "$($P.Prefix)-$i"
+        $step   = $i + 1
+        DLog "VM $step/$($P.VmCount): $vmName ..." "STEP"
+        SP ($baseProgress + [Math]::Round($i * 30.0 / [Math]::Max($P.VmCount,1), 0))
+
+        try {
+            # NIC
+            $ipCfg = New-AzNetworkInterfaceIpConfig -Name "ipconfig1" -SubnetId $subnetObj.Id -Primary
+            $nic   = New-AzNetworkInterface -Name "$vmName-nic" -ResourceGroupName $P.RG -Location $P.Loc -IpConfiguration $ipCfg -EA Stop
+            DLog "  [$step] NIC: $vmName-nic" "OK"
+
+            # VM config
+            $vmCfg = New-AzVMConfig -VMName $vmName -VMSize $P.VmSz |
+                     Set-AzVMOperatingSystem -Windows -ComputerName $vmName -Credential $cred -ProvisionVMAgent -EnableAutoUpdate |
+                     Set-AzVMSourceImage -PublisherName $img.Pub -Offer $img.Off -Skus $img.Sku -Version "latest" |
+                     Add-AzVMNetworkInterface -Id $nic.Id |
+                     Set-AzVMOSDisk -CreateOption FromImage -StorageAccountType "Premium_LRS"
+            if ($P.HybridBenefit) { $vmCfg = $vmCfg | Set-AzVMLicenseType -LicenseType "Windows_Client" }
+
+            DLog "  [$step] Creating VM (3-5 min)..." "INFO"
+            New-AzVM -ResourceGroupName $P.RG -Location $P.Loc -VM $vmCfg -EA Stop | Out-Null
+            DLog "  [$step] VM provisioned: $vmName" "OK"
+
+            # Entra ID join
+            if ($P.JoinType -eq "EntraID") {
+                $mdmId = if ($P.IntuneEnroll) {"0000000a-0000-0000-c000-000000000000"} else {""}
+                Set-AzVMExtension -ResourceGroupName $P.RG -VMName $vmName `
+                    -Name "AADLoginForWindows" -Publisher "Microsoft.Azure.ActiveDirectory" `
+                    -ExtensionType "AADLoginForWindows" -TypeHandlerVersion "1.0" `
+                    -Settings @{mdmId=$mdmId} -EA Stop | Out-Null
+                DLog "  [$step] Entra ID join extension OK" "OK"
+            }
+
+            # Hybrid AD join
+            if ($P.JoinType -eq "HybridAD") {
+                $djSet  = @{Name=$P.DomainName;User=$P.DomainUser;Restart="true";Options="3"}
+                $djProt = @{Password=$P.DomainPass}
+                if ($P.OUPath) { $djSet.OUPath = $P.OUPath }
+                Set-AzVMExtension -ResourceGroupName $P.RG -VMName $vmName `
+                    -Name "JsonADDomainExtension" -Publisher "Microsoft.Compute" `
+                    -ExtensionType "JsonADDomainExtension" -TypeHandlerVersion "1.3" `
+                    -Settings $djSet -ProtectedSettings $djProt -EA Stop | Out-Null
+                DLog "  [$step] Domain joined: $($P.DomainName)" "OK"
+            }
+
+            # AVD DSC registration extension
+            Set-AzVMExtension -ResourceGroupName $P.RG -VMName $vmName `
+                -Name "DSC" -Publisher "Microsoft.Powershell" -ExtensionType "DSC" `
+                -TypeHandlerVersion "2.73" `
+                -Settings @{hostPoolName=$P.HpName; registrationInfoToken=$P.RegToken; aadJoin=($P.JoinType -eq "EntraID")} `
+                -EA Stop | Out-Null
+            DLog "  [$step] AVD agent registered with host pool" "OK"
+
+        } catch { DLog "  [$step] ERROR on ${vmName}: $_" "ERROR" }
+    }
+    SP 100
+    DLog "Session host deployment complete: $($P.VmCount) VM(s)" "OK"
+}
+
+# ============================================================================
+# APP GROUP USER ASSIGNMENT
+# ============================================================================
+function Set-AppGroupUsers {
+    param([string]$AppGroupId, [string[]]$UserUPNs)
+    foreach ($upn in $UserUPNs) {
+        try {
+            $uid = (Get-AzADUser -UserPrincipalName $upn -EA Stop).Id
+            New-AzRoleAssignment -ObjectId $uid -RoleDefinitionName "Desktop Virtualization User" `
+                -Scope $AppGroupId -EA Stop | Out-Null
+            Write-Log "Assigned $upn to app group" "OK"
+        } catch { Write-Log "Assignment error for ${upn}: $_" "WARN" }
+    }
+}
+
+# ============================================================================
 # DEPLOYMENT
 # ============================================================================
 function Start-AVDDeployment {
@@ -2174,19 +3582,47 @@ function Start-AVDDeployment {
 
     if (-not $hpName -or -not $rg) { [System.Windows.MessageBox]::Show("Host Pool Name and Resource Group are required.", "AVD Manager") | Out-Null; return }
 
+    # Pre-deployment readiness check
+    Set-Status "Running pre-deployment validation..." 10
+    $preCheck = @{ HpName=$hpName; RG=$rg; Loc=$loc; VmCnt=$vmCnt; Prefix=$prefix; VmSz=$vmSz
+                   JoinType=$joinType; DomainName=$domainName; AdminPass=$adminPass
+                   VNetRG=$vnetRG; VNetName=$vnetName; SubnetName=$subnetName }
+    if (-not (Test-DeploymentReadiness $preCheck)) { Set-Status "Ready" 0; return }
+
+    # Audit the deployment initiation
+    Write-Audit "DEPLOY_START" "HostPool/$hpName" "Type=$hpType VMs=$vmCnt x $vmSz Region=$loc Join=$joinType" "OK"
+
+    # Gather additional deployment parameters
+    $vmSzRawFull  = try{$script:WizVMSize.SelectedItem}catch{""}
+    $imgName      = try{$script:WizMktImg.SelectedItem}catch{""}
+    $vnetRG       = try{$script:WizVNetRG.SelectedItem}catch{""}
+    $vnetName     = try{$script:WizVNet.SelectedItem}catch{""}
+    $subnetName   = try{$script:WizSubnet.SelectedItem}catch{""}
+    $adminPass    = try{$script:WizAdminPass.Password}catch{""}
+    $joinType     = "EntraID"; try{if($script:RdoHybrid.IsChecked){$joinType="HybridAD"}}catch{}
+    $intuneEnroll = $true;  try{$intuneEnroll=[bool]$script:ChkIntune.IsChecked}catch{}
+    $hybridBen    = $false; try{$hybridBen=[bool]$script:ChkHybridBenefit.IsChecked}catch{}
+    $domainName   = try{$script:WizDomain.Text}catch{""}
+    $domainUser   = try{$script:WizDomainUser.Text}catch{""}
+    $domainPass   = try{$script:WizDomainPass.Password}catch{""}
+    $ouPath       = try{$script:WizOU.Text}catch{""}
+
     $Global:Sync.IsDeploying = $true; $Global:Sync.CancelToken = $false; $Global:Sync.Progress = 0
     try { $script:BtnDeploy.IsEnabled=$false; $script:BtnCancelDeploy.IsEnabled=$true } catch {}
-    # Clear wiz log
     try { $script:WizLog.Document.Blocks.Clear() } catch {}
-    $Global:WizLogBox = $null
-    try { $Global:WizLogBox = $script:WizLog } catch {}
+    $Global:WizLogBox = $null; try { $Global:WizLogBox = $script:WizLog } catch {}
 
     Write-Log "=== Deploying AVD: $hpName ($hpType) ===" "STEP"
-    Write-Log "Region: $loc | VMs: $vmCnt x $vmSz | MaxSessions: $maxS" "INFO"
+    Write-Log "Region: $loc | VMs: $vmCnt x $vmSz | MaxSessions: $maxS | Join: $joinType" "INFO"
 
     $dv = @{
         HpName=$hpName; RG=$rg; Loc=$loc; VmCnt=$vmCnt; Prefix=$prefix; VmSz=$vmSz
-        MaxS=$maxS; HpType=$hpType; LB=$lb; AgType=$agType; StartVM=$startVM; Sync=$Global:Sync
+        MaxS=$maxS; HpType=$hpType; LB=$lb; AgType=$agType; StartVM=$startVM
+        ImageName=$imgName; VNetRG=$vnetRG; VNetName=$vnetName; SubnetName=$subnetName
+        AdminUser=$($script:WizAdminUser.Text); AdminPass=$adminPass
+        JoinType=$joinType; IntuneEnroll=$intuneEnroll; HybridBenefit=$hybridBen
+        DomainName=$domainName; DomainUser=$domainUser; DomainPass=$domainPass; OUPath=$ouPath
+        Sync=$Global:Sync; RegToken=""
     }
 
     $deployScript = {
@@ -2237,29 +3673,39 @@ function Start-AVDDeployment {
             if ($v.Sync.CancelToken) { DLog "Cancelled." "WARN"; return }
 
             # 4. Registration Token
-            DLog "Step 4/5: Generating registration token..." "STEP"
-            SP 70
+            DLog "Step 4/6: Generating registration token..." "STEP"
+            SP 60
             $exp = (Get-Date).ToUniversalTime().AddHours(48).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-            $regInfo = New-AzWvdRegistrationInfo -HostPoolName $v.HpName -ResourceGroupName $v.RG -ExpirationTime $exp -RegistrationTokenOperation Update -EA Stop
+            $regInfo = New-AzWvdRegistrationInfo -HostPoolName $v.HpName -ResourceGroupName $v.RG `
+                -ExpirationTime $exp -RegistrationTokenOperation Update -EA Stop
+            $v.RegToken = $regInfo.Token
             DLog "  Token generated (valid 48 hrs)" "OK"
-            DLog "" "INFO"
-            DLog "Step 5/5: Session host deployment..." "STEP"
-            DLog "  $($v.VmCnt) x $($v.VmSz) VMs to deploy" "INFO"
-            DLog "  Use this token to register VMs: $($regInfo.Token.Substring(0,[Math]::Min(30,$regInfo.Token.Length)))..." "INFO"
-            DLog "  Portal > Host Pool > Session hosts > Add" "INFO"
-            DLog "  OR deploy ARM template with token value" "INFO"
+            if ($v.Sync.CancelToken) { DLog "Cancelled." "WARN"; return }
 
+            # 5. Deploy Session Host VMs
+            DLog "Step 5/6: Deploying $($v.VmCnt) session host VM(s)..." "STEP"
+            if ($v.VNetName -and $v.SubnetName -and $v.AdminUser -and $v.AdminPass) {
+                Deploy-SessionHosts -P $v
+            } else {
+                DLog "  Skipping VM creation — network/credentials not fully configured" "WARN"
+                DLog "  Registration token: $($regInfo.Token.Substring(0,[Math]::Min(60,$regInfo.Token.Length)))..." "INFO"
+                DLog "  Use the token above to manually register VMs via Portal or ARM template" "INFO"
+            }
+            if ($v.Sync.CancelToken) { DLog "Cancelled." "WARN"; return }
+
+            # 6. Post-deployment
             SP 100
             DLog "" "INFO"
             DLog "=== Deployment complete ===" "OK"
-            DLog "Host Pool  : $($v.HpName) ($($v.HpType), $($v.LB))" "OK"
-            DLog "App Group  : $agName" "OK"
-            DLog "Workspace  : $wsName" "OK"
-            DLog "Next steps :" "INFO"
-            DLog "  1. Deploy session host VMs with the registration token above" "INFO"
-            DLog "  2. Assign users to app group: $agName" "INFO"
-            DLog "  3. Configure FSLogix profile storage" "INFO"
-            DLog "  4. Set scaling plan and RDP properties as needed" "INFO"
+            DLog "Host Pool : $($v.HpName) ($($v.HpType), $($v.LB))" "OK"
+            DLog "App Group : $agName" "OK"
+            DLog "Workspace : $wsName" "OK"
+            DLog "" "INFO"
+            DLog "Post-deployment checklist:" "INFO"
+            DLog "  [1] Verify session hosts appear in host pool within 5-10 min" "INFO"
+            DLog "  [2] Assign users: Portal > App Groups > $agName > Assignments" "INFO"
+            DLog "  [3] Configure FSLogix registry on hosts if not done via GPO" "INFO"
+            DLog "  [4] Test a user connection via https://client.wvd.microsoft.com" "INFO"
         } catch {
             DLog "DEPLOYMENT FAILED: $_" "ERROR"; SP 0
         }
@@ -2330,9 +3776,16 @@ $BtnConnect.Add_Click({
         $Global:Subscription = $ctx.Subscription; $Global:TenantId = $ctx.Tenant.Id
         Set-Connected $true; Set-Status "Connected: $($ctx.Subscription.Name)" 0
         Write-Log "Connected: $($ctx.Account.Id) | Sub: $($ctx.Subscription.Name)" "OK"
+        Load-Subscriptions   # populate subscription switcher
         Load-Dashboard
         $autoLic = $true; try { $autoLic = [bool]$script:SetAutoLic.IsChecked } catch {}
         if ($autoLic) { Invoke-LicenseScan }
+        # Real cost estimate in background
+        $subScope = "/subscriptions/$($ctx.Subscription.Id)"
+        $cost = Get-AzRealCost -Scope $subScope -Days 30
+        if ($cost -ne $null) {
+            Write-Log "Azure cost last 30 days (VMs + AVD): `$$cost" "INFO"
+        }
     } catch {
         Set-Status "Connection failed" 0; Write-Log "Connection failed: $_" "ERROR"
         [System.Windows.MessageBox]::Show("Connection failed:`n$_`n`nCheck credentials and network.", "AVD Manager") | Out-Null
@@ -2346,6 +3799,7 @@ $BtnScanLic.Add_Click({ $Script:LicScanned=$false; Invoke-LicenseScan })
 
 # Wizard nav
 $BtnWizNext.Add_Click({
+    if (-not (Test-WizardStep $Script:WizStep)) { return }   # validation gate
     if ($Script:WizStep -lt $Script:WizTotalSteps) {
         $Script:WizStep++
         Update-WizardUI $Script:WizStep
@@ -2433,15 +3887,14 @@ $BtnRefSess.Add_Click({ Load-SessionHosts })
 $SessFilter.Add_SelectionChanged({ Load-SessionHosts })
 $BtnDrainAll.Add_Click({
     if (-not $Global:IsConnected) { return }
-    $r = [System.Windows.MessageBox]::Show("Enable drain mode on all visible session hosts?", "AVD Manager", [System.Windows.MessageBoxButton]::YesNo)
-    if ($r -eq "Yes") {
-        $rows = $script:GridSess.Items
-        foreach ($row in $rows) {
-            try { Update-AzWvdSessionHost -HostPoolName $row.HPName -ResourceGroupName $row.RG -Name $row.VMName -AllowNewSession $false -EA SilentlyContinue | Out-Null } catch {}
-        }
-        Write-Log "Drain mode enabled on all visible hosts" "OK"
-        Load-SessionHosts
+    if (-not (Confirm-Action "Enable drain mode on ALL visible session hosts?`nNew sessions will be blocked on all hosts.")) { return }
+    $rows = $script:GridSess.Items; $cnt = 0
+    foreach ($row in $rows) {
+        try { Update-AzWvdSessionHost -HostPoolName $row.HPName -ResourceGroupName $row.RG -Name $row.VMName -AllowNewSession $false -EA SilentlyContinue | Out-Null; $cnt++ } catch {}
     }
+    Show-Toast "Drain enabled on $cnt hosts"
+    Write-Log "Drain mode enabled on $cnt hosts" "OK"
+    Load-SessionHosts
 })
 $BtnHealAll.Add_Click({
     if (-not $Global:IsConnected) { return }
@@ -2725,9 +4178,166 @@ $BtnAddAlert.Add_Click({
     Start-Process "https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade/alertsV2"
 })
 
+# -- Subscription switcher ---------------------------------------------------
+$CboSubSwitcher.Add_SelectionChanged({
+    $idx = try{$script:CboSubSwitcher.SelectedIndex}catch{-1}
+    if ($idx -lt 0 -or -not $Global:SubList -or $idx -ge $Global:SubList.Count) { return }
+    $sub = $Global:SubList[$idx]
+    if ($sub.Id -eq (try{(Get-AzContext).Subscription.Id}catch{""})) { return }
+    try {
+        Set-AzContext -SubscriptionId $sub.Id -EA Stop | Out-Null
+        $Global:Subscription = (Get-AzContext).Subscription
+        Set-Connected $true
+        Write-Log "Switched to subscription: $($sub.Name)" "OK"
+        Show-Toast "Switched to: $($sub.Name)"
+        Load-Dashboard
+        $Script:LicScanned = $false
+    } catch { Write-Log "Subscription switch error: $_" "ERROR" }
+})
+
+# -- HP filter / CSV ---------------------------------------------------------
+$FilterHP.Add_TextChanged({
+    $filter = try{$script:FilterHP.Text.ToLower()}catch{""}
+    if (-not $filter) {
+        Load-HostPools; return
+    }
+    $all = $Global:Sync["CachedHPRows"]
+    if (-not $all) { return }
+    $filtered = @($all | Where-Object {
+        $_.Name    -match $filter -or
+        $_.Type    -match $filter -or
+        $_.Location -match $filter -or
+        $_.Status  -match $filter -or
+        $_.RG      -match $filter
+    })
+    try { $script:GridHP.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($filtered) } catch {}
+})
+$BtnExportHP.Add_Click({ Export-GridData $script:GridHP "host-pools" })
+
+# -- Session filter / CSV / user sessions ------------------------------------
+$FilterSess.Add_TextChanged({
+    $filter = try{$script:FilterSess.Text.ToLower()}catch{""}
+    if (-not $filter) { Load-SessionHosts; return }
+    $all = $Global:Sync["CachedSessRows"]
+    if (-not $all) { return }
+    $filtered = @($all | Where-Object {
+        $_.VMName  -match $filter -or
+        $_.Pool    -match $filter -or
+        $_.Status  -match $filter -or
+        $_.VMSize  -match $filter
+    })
+    try { $script:GridSess.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($filtered) } catch {}
+})
+$BtnExportSess.Add_Click({ Export-GridData $script:GridSess "session-hosts" })
+
+# -- User session management -------------------------------------------------
+$BtnRefUserSess.Add_Click({ Load-UserSessions })
+$BtnMsgUser.Add_Click({
+    $row = $script:GridUserSess.SelectedItem
+    if (-not $row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    Send-UserMessage $row
+})
+$BtnDisconnectUser.Add_Click({
+    $row = $script:GridUserSess.SelectedItem
+    if (-not $row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    Invoke-Disconnect $row
+})
+$BtnLogoffUser.Add_Click({
+    $row = $script:GridUserSess.SelectedItem
+    if (-not $row) { Show-Toast "Select a user session first" "#F59E0B"; return }
+    Invoke-ForceLogoff $row
+})
+$BtnExportUserSess.Add_Click({ Export-GridData $script:GridUserSess "user-sessions" })
+
+# -- App group: assign users -------------------------------------------------
+$BtnAssignUsers.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    $ag = $script:GridAG.SelectedItem
+    if (-not $ag) { Show-Toast "Select an app group first" "#F59E0B"; return }
+    $upns = [Microsoft.VisualBasic.Interaction]::InputBox(
+        "Enter UPNs to assign to '$($ag.Name)'`n(comma or newline separated):",
+        "Assign Users to App Group", "")
+    if (-not $upns) { return }
+    $list = @($upns -split "[,\n]" | ForEach-Object {$_.Trim()} | Where-Object {$_})
+    try {
+        $agObj = Get-AzWvdApplicationGroup -Name $ag.Name -EA SilentlyContinue | Select-Object -First 1
+        if (-not $agObj) { $agObj = Get-AzWvdApplicationGroup -EA SilentlyContinue | Where-Object {$_.Name -eq $ag.Name} | Select-Object -First 1 }
+        if ($agObj) {
+            Set-AppGroupUsers -AppGroupId $agObj.Id -UserUPNs $list
+            Show-Toast "Assigned $($list.Count) user(s) to $($ag.Name)"
+        } else { Show-Toast "App group not found" "#EF4444" }
+    } catch { Write-Log "Assign error: $_" "ERROR" }
+})
+
+# -- Destructive confirmations -----------------------------------------------
+$CtxSessRemove.Add_Click({
+    $row = $script:GridSess.SelectedItem
+    if (-not ($row -and $Global:IsConnected)) { return }
+    if (-not (Confirm-Action "Remove '$($row.VMName)' from pool '$($row.Pool)'?`nThe VM itself is NOT deleted.")) { return }
+    try {
+        Remove-AzWvdSessionHost -HostPoolName $row.HPName -ResourceGroupName $row.RG -Name $row.VMName -Force -EA Stop | Out-Null
+        Write-Audit "REMOVE_SESSION_HOST" "HP/$($row.HPName)/Host/$($row.VMName)" "" "OK"
+        Show-Toast "Removed $($row.VMName)"; Write-Log "Removed: $($row.VMName)" "OK"; Load-SessionHosts
+    } catch { Write-Log "Remove error: $_" "ERROR" }
+})
+$CtxHPDelete.Add_Click({
+    $row = $script:GridHP.SelectedItem
+    if (-not ($row -and $Global:IsConnected)) { return }
+    if (-not (Confirm-Action "DELETE host pool '$($row.Name)'?`n`nAll session host registrations will be removed.`nVMs themselves are NOT deleted.")) { return }
+    $confirm = [Microsoft.VisualBasic.Interaction]::InputBox("Type the pool name to confirm:", "Confirm Delete", "")
+    if ($confirm -ne $row.Name) { Show-Toast "Name mismatch — cancelled" "#F59E0B"; return }
+    try {
+        Remove-AzWvdHostPool -Name $row.Name -ResourceGroupName $row.RG -Force -EA Stop | Out-Null
+        Show-Toast "Deleted: $($row.Name)"; Write-Log "Deleted host pool: $($row.Name)" "OK"; Load-HostPools
+    } catch { Write-Log "Delete error: $_" "ERROR" }
+})
+
+# -- AVD Insights on Monitoring panel ----------------------------------------
+$BtnAddAlert.Add_Click({
+    if (-not $Global:IsConnected) { return }
+    # Try to get a LAW workspace ID to run insights query
+    $sel = try{$script:GridLAW.SelectedItem}catch{$null}
+    if ($sel) {
+        Write-Log "Running AVD Insights queries against workspace: $($sel.Name)..." "STEP"
+        $law = Get-AzOperationalInsightsWorkspace -Name $sel.Name -EA SilentlyContinue | Select-Object -First 1
+        if (-not $law) { $law = Get-AzOperationalInsightsWorkspace -EA SilentlyContinue | Where-Object {$_.Name -eq $sel.Name} | Select-Object -First 1 }
+        if ($law) {
+            $insights = Get-AVDInsights -WorkspaceId $law.CustomerId
+            if ($insights) {
+                $conn = try{$insights.Connections[0][0]}catch{"N/A"}
+                $errs = try{$insights.Errors[0][0]}catch{"N/A"}
+                $msg = "AVD Insights (last 24h):`n`nConnections: $conn`nErrors: $errs`n`nTop users (7d):`n"
+                try { $insights.TopUsers | ForEach-Object { $msg += "  $($_[0]) — $($_[1]) sessions`n" } } catch {}
+                [System.Windows.MessageBox]::Show($msg, "AVD Insights") | Out-Null
+                Write-Log "Insights: $conn connections, $errs errors" "OK"
+                return
+            }
+        }
+    }
+    # Fallback: open Portal alert creation
+    [System.Windows.MessageBox]::Show("Select a Log Analytics workspace in the grid above to run AVD Insights queries.`n`nOr click OK to open Azure Monitor alert creation in the Portal.", "Add Alert / AVD Insights") | Out-Null
+    Start-Process "https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade/alertsV2"
+})
+
+# Load user sessions when switching to Sess panel (already handled in Switch-Panel)
+# Also auto-load when HP filter changes
+$SessFilter.Add_SelectionChanged({ Load-SessionHosts; Load-UserSessions })
+
 $BtnClearLog.Add_Click({ try{$script:MainLogBox.Document.Blocks.Clear()}catch{} })
 
 # Settings
+$BtnRunBP.Add_Click({ Invoke-BestPracticesCheck })
+$BtnExportBP.Add_Click({ Export-GridData $script:GridBP "avd-best-practices" })
+$BPCatFilter.Add_SelectionChanged({
+    $sel = try{$script:BPCatFilter.SelectedItem.Content}catch{"All Categories"}
+    if ($sel -eq "All Categories" -or -not $Script:BPRows -or $Script:BPRows.Count -eq 0) {
+        try { $script:GridBP.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($Script:BPRows.ToArray()) } catch {}
+        return
+    }
+    $filtered = @($Script:BPRows | Where-Object { $_.Category -eq $sel })
+    try { $script:GridBP.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[PSObject]]($filtered) } catch {}
+})
+
 $BtnSaveSet.Add_Click({
     try {
         $Global:Cfg.LastSubscription = try{$script:SetSubId.Text}catch{""}
@@ -2738,15 +4348,52 @@ $BtnSaveSet.Add_Click({
         $Script:Countdown            = $Global:RefreshSecs
         $Global:Cfg | ConvertTo-Json -Depth 5 | Set-Content $Global:ConfigFile -Encoding UTF8
         Write-Log "Settings saved to $Global:ConfigFile" "OK"
-        [System.Windows.MessageBox]::Show("Settings saved.", "AVD Manager") | Out-Null
+        Write-Audit "SETTINGS_SAVED" "AVD-Manager-Config" "" "OK"
+        Show-Toast "Settings saved"
     } catch { Write-Log "Error saving settings: $_" "ERROR" }
 })
+
 $BtnTestConn.Add_Click({
     try {
-        $ctx = Get-AzContext -EA Stop
-        [System.Windows.MessageBox]::Show("Connected`n`nAccount    : $($ctx.Account.Id)`nSubscription: $($ctx.Subscription.Name)`nTenant     : $($ctx.Tenant.Id)", "AVD Manager - Connection Test") | Out-Null
+        $ctx  = Get-AzContext -EA Stop
+        $cost = Get-AzRealCost -Scope "/subscriptions/$($ctx.Subscription.Id)" -Days 30
+        $costTxt = if ($cost -ne $null) {"`$${cost} (last 30d VM+AVD)"} else {"(unavailable)"}
+        [System.Windows.MessageBox]::Show(
+            "Connected`n`n" +
+            "Account      : $($ctx.Account.Id)`n" +
+            "Subscription : $($ctx.Subscription.Name)`n" +
+            "Tenant       : $($ctx.Tenant.Id)`n" +
+            "Token Expiry : $(if($Global:GraphTokenExpiry -gt [DateTime]::MinValue){$Global:GraphTokenExpiry.ToLocalTime().ToString('HH:mm:ss')}else{'(not cached)'})`n`n" +
+            "Azure Cost   : $costTxt",
+            "Connection Status") | Out-Null
     } catch {
         [System.Windows.MessageBox]::Show("Not connected. Click 'Connect to Azure'.", "AVD Manager") | Out-Null
+    }
+})
+
+# Config export / import (add buttons if they don't exist in XAML; handled via context)
+# Keyboard shortcut: Ctrl+E = Export, Ctrl+I = Import
+$Window.Add_KeyDown({
+    param($s,$e)
+    if ($e.Key -eq "E" -and [System.Windows.Input.Keyboard]::Modifiers -eq "Control") { Export-ToolConfig }
+    if ($e.Key -eq "I" -and [System.Windows.Input.Keyboard]::Modifiers -eq "Control") { Import-ToolConfig }
+    if ($e.Key -eq "F5")                                                               { if ($Global:IsConnected) { Load-Dashboard } }
+    if ($e.Key -eq "F1") {
+        [System.Windows.MessageBox]::Show(
+            "AVD Manager Keyboard Shortcuts`n`n" +
+            "F5          : Refresh dashboard`n" +
+            "Ctrl+E      : Export configuration`n" +
+            "Ctrl+I      : Import configuration`n" +
+            "Ctrl+W      : Open in Azure Portal (when grid row selected)`n" +
+            "Escape      : Cancel current deployment`n`n" +
+            "Best Practices scoring:`n" +
+            "  PASS = 100pts  WARN = 50pts  FAIL = 0pts`n" +
+            "  Score = (PASS*100 + WARN*50) / total_checks",
+            "Help - AVD Manager") | Out-Null
+    }
+    if ($e.Key -eq "Escape" -and $Global:Sync.IsDeploying) {
+        $Global:Sync.CancelToken = $true
+        Write-Log "Cancellation requested via Escape key" "WARN"
     }
 })
 
@@ -2764,19 +4411,30 @@ try { $script:GridTags.ItemsSource = [System.Collections.ObjectModel.ObservableC
 
 Update-WizardUI 1
 
+# Run prerequisites check at startup
+Test-Prerequisites
+
+# Restore window position/size from last session
+Restore-WindowState
+
 Write-Log "AVD Manager v$Global:AppVersion initialized" "OK"
 Write-Log "Click 'Connect to Azure' to begin" "INFO"
-Write-Log "Supports: Pooled Desktop, Personal Desktop, RemoteApp | All Azure regions | License assessment" "INFO"
+Write-Log "Supports: Pooled, Personal, RemoteApp | License assessment | Best Practices | All Azure regions" "INFO"
+Write-Log "Audit log: $Global:AuditLog" "INFO"
 
 $Script:Timer.Start()
 
+# Save window state on close, write audit entry
 $Window.Add_Closing({
     try { $Script:Timer.Stop() } catch {}
     $Global:Sync.CancelToken = $true
+    Save-WindowState
     try { $Global:Cfg | ConvertTo-Json -Depth 5 | Set-Content $Global:ConfigFile -Encoding UTF8 } catch {}
+    try { Write-Audit "SESSION_END" "AVD-Manager" "Normal exit" "OK" } catch {}
     try { Write-Log "AVD Manager closed" "INFO" } catch {}
 })
 
 [System.Console]::WriteLine("Starting Azure Virtual Desktop Manager v$Global:AppVersion...")
 [System.Console]::WriteLine("Log: $Global:LogFile")
+[System.Console]::WriteLine("Audit: $Global:AuditLog")
 [void]$Window.ShowDialog()
